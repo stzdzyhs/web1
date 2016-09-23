@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<!-- http://www.cnblogs.com/pigtail/archive/2012/11/25/2787508.html -->
+<html>
+<head>
+<title>头尾固定中间高度自适应布局</title>
+<style>
+html, body {
+    height:100%;
+    margin:0;
+    padding:0
+}
+
+#dHead {
+    height:100px;
+/*     line-height:100px; */
+    background:#690;
+    width:100%;
+    position:absolute;
+/*     z-index:5; */
+    top:0;
+    text-align:center;
+}
+#dBody {
+    background:#FC0;
+    width:100%;
+	overflow:auto; 
+/*     overflow:hide; */
+/*     z-index:10; */
+    position:absolute;
+    top:100px;
+    bottom:100px;
+}
+.mycontent {
+    padding:20px;
+    border:0px solid blue;
+}
+#dFoot {
+    height:100px;
+/*     line-height:100px; */
+    background:red;
+    width:100%;
+/*     z-index:200; */
+    position:absolute;
+    bottom:0;
+    text-align:center;
+}
+
+.left { 
+	float:left; 
+	width:200px;
+ 	height:100%;
+	background:#00f;
+	overflow:auto; 
+/* 	margin-right:-3px; */
+}
+.right { 
+	float:right; 
+	width:100px; 
+ 	height:100%;
+	background:#0f0;
+/* 	margin-left:-3px; */
+}
+.center{ 
+	background:#333; 
+ 	height:100%;
+/* 	margin:0 100px;  */
+/* 	margin:0 8px; */
+}
+	
+
+</style>
+</head>
+
+<body>
+<div id="dHead">
+	<div style="margin:16px;background:blue;">固定头部100px;fff</div>
+</div>
+
+<div id="dBody">
+	
+<div class="left">
+	<div style="padding:3px;">
+		asdfasldfkjdfas<br/>
+		alsdfkjasdfldf<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+		lasdfdkljasdfasd<br/>
+		al;sdfkjd<br/>
+	</div>
+</div>
+
+<div class="right">我是right</div>
+<div class="center">
+	ccccccc
+</div>
+	
+</div>
+
+<div id="dFoot">
+	<div style="padding:5px;background:green;">
+		固定尾部100px
+	</div>
+</div>
+
+</body>
+</html>

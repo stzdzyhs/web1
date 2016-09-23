@@ -1,0 +1,321 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<title>Web Client</title>
+
+<style>
+html, body {
+    height:100%;
+    margin:0;
+    padding:0
+}
+
+#dHead {
+    height:100px;
+/*     line-height:100px; */
+    background:#690;
+    width:100%;
+    position:absolute;
+/*     z-index:5; */
+    top:0;
+    text-align:center;
+}
+#dBody {
+/*     background:#FC0; */
+    width:100%;
+	overflow:auto; 
+/*     overflow:hide; */
+/*     z-index:10; */
+    position:absolute;
+    top:100px;
+    bottom:100px;
+}
+.mycontent {
+    padding:20px;
+    border:0px solid blue;
+}
+#dFoot {
+    height:100px;
+/*     line-height:100px; */
+/*     background:red; */
+    width:100%;
+/*     z-index:200; */
+    position:absolute;
+    bottom:0;
+    text-align:center;
+}
+
+.left { 
+	float:left; 
+	width:200px;
+ 	height:100%;
+	background:#00f;
+	overflow:auto; 
+/* 	margin-right:-3px; */
+}
+.right { 
+	float:right; 
+	width:30px; 
+ 	height:100%;
+/* 	background:#0f0; */
+/* 	margin-left:-3px; */
+}
+.center { 
+ 	background:#333;
+ 	height:100%;
+ 	clear:none;
+  	overflow:auto;
+  	padding:0px;
+  	margin:0px;
+  	border:0px;
+/* 	margin:0 100px;  */
+/* 	margin:0 8px; */
+}
+
+#eSearch:hover {
+	background-color:#ffdb88;
+}	
+
+</style>
+
+<script src="js/jquery/jquery-1.11.3.js"></script>
+<script src="const.js"></script>
+<script src="js/jquery.binarytransport.js"></script>
+<script src="js/util.js"></script>
+
+<script src="js-xlsx/iemagic.js"></script>
+<script src="js-xlsx/shim.js"></script>
+<script src="js-xlsx/jszip.js"></script>
+<script src="js-xlsx/xlsx.js"></script>
+
+<script>
+
+// need to modify this path !!!
+var FLY_FILE= "E:\\Skyline\\怡德小区项目\\模型\\Skyline-TDJ0810\\Default.fly";
+
+var sgworld = null;
+var houseDb = []; // the associated xlsx data
+
+
+/**
+ * return null if not found
+ */
+function getFirstObject() {
+    // root is the first visible item in tree.
+    var pt = sgworld.ProjectTree;
+    var root1 = pt.GetNextItem("", ITEM_CODE.ROOT);
+    if (root1 == "") {
+        return null;
+    }
+
+    while(true) {
+		var obj = pt.GetObject(root1);
+		if(obj!=null) {
+			return root1;
+		}
+		root1 = pt.GetNextItem(root1, ITEM_CODE.NEXT);
+		if(root1=="") {
+			break;
+		}
+	}
+	return null;
+}
+
+// debug code, visit whole project tree.
+function scanTree() {
+    try {
+        //alert("Click OK to find Vermont item by its path in the tree");
+//         var id = sgworld.ProjectTree.FindItem("New England\\States\\Vermont");
+//         if(id)
+//             alert("Found Vermont with id=" + id);
+//         else
+//             alert("New England\\States\\Vermont does not exist in tree");
+
+
+        // root is the first visible item in tree.
+        var root = sgworld.ProjectTree.GetNextItem("", 18 /* ItemCode.ROOT*/);
+
+        // if the tree have hidden group, skip it.
+
+        // find hidden group by its name. We could also check by HiddenGroupID , which is actually its parent id.
+
+        if(sgworld.ProjectTree.GetItemName(root) == sgworld.ProjectTree.HiddenGroupName)
+            root = sgworld.ProjectTree.GetNextItem(root,13 /* ItemCode.NEXT*/);
+
+        var tree = buildTreeRecursive(root, 1);
+
+        //alert(tree);
+    }
+    catch (ex) {
+       alert("Unexpected error: " + ex.description);
+    }
+}
+
+function buildTreeRecursive(current, indent) {
+    // build padding
+    var padding = "";
+    for (var i = 0; i < indent * 3; i++)
+        padding += "-"; 
+    var result = "";
+    // iterate over all siblings of current node
+    while (current) {
+        // append node name to the tree string
+        var currentName = sgworld.ProjectTree.GetItemName(current);
+        var objData = sgworld.ProjectTree.GetObject(current);
+        if(objData==null) {
+        	objData = {ObjectType:'null'};
+        }
+        result += padding + current + " " + currentName + " objType:" + objData.ObjectType + "\r\n";
+        
+        // if current node is group, recursively build tree from its first child;
+        if (sgworld.ProjectTree.IsGroup(current))
+        {
+            var child = sgworld.ProjectTree.GetNextItem(current,11 /* ItemCode.CHILD */);
+            result += buildTreeRecursive(child, indent + 1);
+        }
+        // move to next sibling
+        current = sgworld.ProjectTree.GetNextItem(current,13 /* ItemCode.NEXT*/);
+    }
+    return result;
+}
+
+function processWb(workbook) {
+	houseDb = [];
+
+	workbook.SheetNames.forEach(function(sheetName) {
+		var data = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+		if(data.length > 0){
+			for(var i=0;i<data.length;i++) {
+				if(data[i].skylineId!=null && data[i].skylineId!="") {
+					houseDb.push(data[i]);
+				}
+			}
+		}
+	});
+}
+
+function readXslx() {
+	var xlsxFilename = getXlsxFilename(FLY_FILE);
+	$.ajax({
+		url: "xlsx/" + xlsxFilename,
+		type: "GET",
+		dataType: "binary",
+		processData: false,
+		success: function(data0){
+			// do something with binary data
+			debugger;
+			var data = new Uint8Array(data0);
+			console.log("data len: " + data.length);
+			var arr = new Array();
+			var zc = 0;
+			for(var i = 0; i != data.length; ++i) {
+				if(data[i]==0) {
+					zc++;
+				}
+				arr[i] = String.fromCharCode(data[i]);
+			}
+			var wb = XLSX.read(arr.join(""), {type:"binary"});
+			processWb(wb);
+			//console.log("zc: " + zc);
+			alert("houseDb : " + houseDb.length);
+		},
+		failure: function() {
+			alert("读取xlsx文件失败:");			
+		}
+	});	
+}
+
+function onload() {
+	try {
+		sgworld = new ActiveXObject("TerraExplorerX.SGWorld66");
+	}
+	catch(e) {		
+		alert("请安装TerraExplorer 6.6");
+		return;
+	}
+	
+	sgworld.IgnoreAccelerators = true;
+		
+	var te3dwin = document.getElementById("te3dwin");
+	var c = te3dwin.Caption;
+	//alert(c);	
+		
+	sgworld.Project.Open(FLY_FILE, false);
+		
+	// fly to first object
+	var id = getFirstObject();
+	if(id!=null) {
+		// why FlyTo must run after some time ???
+		setTimeout(function() {
+			//alert("flyto: " + id);
+			sgworld.Navigate.FlyTo(id,0);
+			
+			/*
+			var ps = "";
+			var p = sgworld.ProjectTree;
+			for(var px in p ) {
+				ps = ps + px + " ";
+			}
+			console.log("ps: " + ps);
+			var x1 = p.FindItem("1号楼\\201");
+			console.log("x1: " + p.GetItemName(x1));
+			var x2 = p.FindItem("2号楼\\201");
+			console.log("x2: " + p.GetItemName(x2));
+			*/
+			
+		}, 1000);
+	}
+	
+	
+	
+	
+
+	//scanTree();
+
+    //sgworld.Navigate.FlyTo("yide1",0);
+		
+	readXslx();
+}
+</script>
+
+</head>
+<body onload="onload();">
+
+<!-- this not work ! 
+<object id="sgworld" classid="CLSID:3A4F9197-65A8-11D5-85C1-0001023952C1" style="visibility:hidden;height:0px;"></object> -->
+
+<div id="dHead">
+	<div style="padding:5px;">
+	公司logo ....
+	<input id="eInput"/>
+	<img id="eSearch" width="32px" height="32px" src="images/search.png"  style="vertical-align:middle;">
+	</div>
+</div>
+
+<div id="dBody">
+	
+<div class="left">
+	<div id="eResult" style="padding:3px;">
+	</div>
+</div>
+
+<div class="right"></div>
+<div class="center">
+
+<!-- <div style="background:yellow;"> -->
+<!-- 	toolbar 1 -->
+<!-- </div> -->
+<object id="te3dwin" classid="CLSID:3a4f9192-65a8-11d5-85c1-0001023952c1" width="99%" height="99%" style="border:0px;background:red;padding:0px;margin:0px;">
+</object>
+</div>
+	
+</div>
+
+<div id="dFoot">
+	<div style="padding:5px;background:green;">
+
+	</div>
+</div>
+
+</body>
+</html>

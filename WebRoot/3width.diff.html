@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<!-- http://www.cnblogs.com/pigtail/archive/2012/11/25/2787508.html -->
+<html>
+<head>
+<title>box1</title>
+
+<style>
+html, body, div {
+	width:100%;
+    height:100%;
+    margin:0;
+    padding:0;
+    background:blue;
+}
+#all {
+	width:300px;
+    height:300px;
+    overflow:auto;
+    
+    margin:0;
+    padding:5px;
+    background:green;
+	border:2px solid red;
+}
+
+
+</style>
+
+<script src="js/jquery/jquery-1.11.3.js"></script>
+<script>
+
+function btn1OnClick() 
+{
+	
+	var obj = $("#all").get(0);
+	debugger;
+
+	var x = $("#all");
+	var w0 = x.width();	
+	console.log("width: " + w0);
+	
+	var w1 = obj.clientWidth;	
+	console.log("clientWidth: " + w1);
+	
+	var w2 = obj.offsetWidth;
+	console.log("offsetWidth: " + w2);	
+	
+}
+
+// clientWidht = 
+// if not scroll bar, width + 2* padding = 300 + 2* 5 = 310 : (clientWdith)
+// if has scroll bar: clientWidth: 293 + 17(scrollBar width)  = 310
+
+// offsetWidth = clientWidth + scrollBar.width + border.width*2
+// e.g: 314 = 293 + 17 + 2*2
+
+function btn2OnClick()
+{
+	var borderWidth = $("#all").css("border-left-width");
+	console.log("bw: " + borderWidth);
+	
+	var plWidth = $("#all").css("padding-left-width");
+	console.log("padding left w: " + plWidth);
+	
+	var prWidth = $("#all").css("padding-right-width");
+	console.log("padding right w: " + prWidth);
+}
+
+</script>
+</head>
+
+<body>
+
+<div id="all" style="">
+
+
+<div style="width:100%;height:100%;background:red;padding:0px;">
+	<div style="padding:5px;">
+		asdflkdfadfklsa
+		;lasdfkjasdlfkjasdf
+	</div>
+</div>
+
+</div>
+
+<button onclick="btn1OnClick();">Click me</button>
+<button onclick="btn2OnClick();">Click me</button>
+</body>
+</html>

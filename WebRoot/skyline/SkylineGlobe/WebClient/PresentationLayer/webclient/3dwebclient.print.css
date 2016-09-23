@@ -1,0 +1,25 @@
+﻿html
+{
+	height: 100%;
+	overflow:hidden;
+}
+
+body
+{
+	height:100%;
+    font-family: Calibri, Arial, Trebuchet MS;
+    font-size: 12px;
+    margin: 0px;
+    color: #254264;
+}
+
+
+#loading, #noTE, #noInternetLicense
+{
+	display:none;
+}
+
+#ribbonContainer, #logoContainer, #leftContainer, #userContainer , .olControlSGToolBarSimple, .olControlSGStatusBar, .olControlScaleBar 
+{
+	display:none;
+}

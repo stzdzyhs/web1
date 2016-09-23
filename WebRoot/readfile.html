@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script>
+
+function readXslx() {
+	alert("111111");
+	var stream = null;
+	try {
+		stream = new ActiveXObject("ADODB.Stream");
+	}
+	catch(e) {		
+		alert("ado failed: " + e);
+		return;
+	}
+	
+	debugger;
+	stream.Open("E:\\Skyline\\怡德小区项目\\功能开发外包\\HouseAndPeople.xlsx");
+	var bytes = stream.Read();
+	
+	stream.Close();
+	alert("ado good");
+}
+
+function onload() {
+	readXslx();
+}
+
+</script>
+</head>
+<body onload="onload();">
+
+</body>
+</html>

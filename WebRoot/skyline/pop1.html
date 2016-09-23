@@ -1,0 +1,21 @@
+<html>
+<head>
+<title>Popup1</title>
+<script type="text/javascript">
+        
+function init()
+{
+	alert("init");
+    var popup = SGWorld.Creator.CreatePopupMessage("My popup", "", 0,0,450,120);
+    popup.InnerText = "just test msg";
+    SGWorld.Window.ShowPopup(popup);
+}
+</script>
+</head>
+
+<body onload="init();">
+<object id="SGWorld" classid="CLSID:3a4f9199-65a8-11d5-85c1-0001023952c1" style="visibility:hidden;height:0 ">
+</object>
+    
+</body>
+</html>

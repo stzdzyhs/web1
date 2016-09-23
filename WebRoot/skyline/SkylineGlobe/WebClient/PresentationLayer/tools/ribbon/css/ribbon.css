@@ -1,0 +1,768 @@
+﻿
+.ribbon
+{
+    margin: 0px;
+    padding: 0px;
+    border-bottom: 1px solid #8DB2E3;
+    display:none;
+	height:103px;
+	background-color:#535353;	
+    position: relative;
+    width: 100%;	
+    margin-top:-12px; /* this is wrong. I need to reset the margin somewhere else, but i do not have time to find where */
+}
+
+.ribbon li
+{
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+}
+
+.ribbon .menu li a
+{
+	color:White;	
+	cursor:pointer;
+}
+.ribbon .menu li a.active
+{
+	color:Black;	
+}
+
+.ribbon input[type='text']
+{
+	float:left;
+	margin:5px;
+	margin-top:20px;	
+}
+
+.ribbon .ribbon-list input[type='text']
+{
+	float:none;
+	margin-top:0px;
+	width:60px;
+	line-height:14px;
+	height:14px;
+	font-size:10px;
+}
+
+.ribbon > li 
+{
+	display:inline;
+}
+
+.ribbon .orb
+{
+    display: inline-block;
+    width: 56px;
+    height: 22px;
+    background-image: url(../images/orb.png);
+    background-position: right bottom;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    padding-left: 0px;    
+    margin-bottom:-2px;
+    position:absolute;
+    top:0px;
+    left:0px;
+}
+
+/* orb menu */
+.ribbon .orb > ul
+{
+	display:none;	
+	background-color:#EFEFEF;
+	position:absolute;
+	top:25px;
+    z-index:2900; /* should be less then 3000, so modal dialogs of jUI will overlay it */
+    padding:0px;
+    border: 1px solid #EFEFEF;
+    border-right: 1px solid #D6D6D6;
+    height:450px;
+    margin-left:0px;
+    margin-top:-2px;
+}
+
+
+.ribbon .orb:hover
+{
+    background-image: url(../images/orb_hover.png);
+}
+
+/* orb menu entries*/
+.ribbon .orb .orbEntry
+{
+	display:block;	
+	padding: 5px;
+	margin:3px 10px;
+	height:17px;
+	width:100px;
+	font-size:14px;
+	border: 1px solid transparent;
+}
+.ribbon .orb .orbEntryWithSubentries
+{
+	width:112px;	
+	margin:0px;
+	padding:10px;
+	padding-left:15px;
+}
+
+.ribbon .orb .orbEntry > img
+{
+	display:inline-block;
+	vertical-align:middle;
+	width:25px;
+	height:16px;
+	margin-bottom:3px;
+}
+
+.ribbon .orb .orbEntry:hover
+{
+	background-color:#f7ffff;
+	border:1px solid blue;
+    -moz-border-radius: 4px; /* FF1-3.6 */
+    -webkit-border-radius: 4px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-radius: 4px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    /* useful if you don't want a bg color from leaking outside the border: */        
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 		
+}
+
+
+.ribbon .orb .orbEntryWithSubentries:hover
+{
+	border-left:1px solid transparent;
+	border-right:1px solid transparent;
+    -moz-border-radius: 0px; /* FF1-3.6 */
+    -webkit-border-radius: 0px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-radius: 0px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+}
+
+.ribbon .orb .orbEntryActive, .ribbon .orb .orbEntryActive:hover
+{
+	background-image: url(../images/orb_item_background.png);
+	background-repeat:no-repeat;
+	border:1px solid transparent;
+}
+
+/* orb submenu*/
+.ribbon .orb .orbEntry > div
+{
+	display:none;	
+	background-color:#F7F7F7;
+	position:absolute;
+	left:133px;
+	top:-1px;
+	width:500px;
+	height:450px;
+	border:1px solid #D6D6D6;
+	border-left:none;
+	padding-left:30px;
+}
+
+.ribbon .orb .orbEntryActive > div
+{
+	display:block;
+}
+
+
+.ribbon .orb .orbEntry > div > ul
+{
+	padding-left:0px;
+	padding-right:30px;
+}
+
+/* orb subentry*/
+.ribbon .orb .orbSubentry
+{
+	height:100px;
+	border-top:1px dashed #C3C7C7;
+	padding-top:20px;
+	padding-left:20px;
+}
+
+.ribbon .orb .orbSubentry:hover
+{
+	background-color:#f9ffff;
+}
+
+.ribbon .orb .orbSubentry h3
+{
+	margin-top:0px;
+	margin-bottom:5px;
+}
+
+.ribbon .orb .orbSubentryImage
+{
+	width:80px;
+	height:80px;
+	float:left;
+	margin-right:20px;
+	text-align:center;
+	border:1px solid #D6D6D6
+}
+.ribbon .orb .orbSubentryImage img
+{
+	width:32px;
+	height:32px;
+	margin-left:24px;
+	margin-top:10px;
+	display:block;
+}
+.ribbon .orb .orbSubentryImage span
+{
+	width:70px;
+	height:20px;
+}
+
+.ribbon a
+{
+    outline: none;
+}
+
+.ribbon .menu
+{
+    clear: both;
+    padding-left: 0px;
+    margin-top: 0px;
+    margin-left: 60px;
+}
+
+
+.ribbon .menu li
+{
+    float: left;
+}
+
+.ribbon .menu>li
+{
+	 width: 75px;
+}
+.ribbon .menu>li a
+{
+    display: block;
+    padding-top: 3px;
+    text-decoration: none;
+    margin-right: 0px;
+    margin-top: 0px;
+    height: 20px;
+    width: 75px;
+    text-align: center;
+    border: solid 1px transparent;
+    border-bottom-width:0px;
+}
+
+.ribbon .menu li a.active
+{
+    background-color: #FBFDFF;
+    border-color:#BAC9DB;
+    -moz-border-right-top-radius: 5px; /* FF1-3.6 */
+    -webkit-border-right-top-radius: 5px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-top-right-radius: 5px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    -moz-border-left-top-radius: 5px; /* FF1-3.6 */
+    -webkit-border-left-top-radius: 5px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-top-left-radius: 5px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    /* useful if you don't want a bg color from leaking outside the border: */        
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 
+}
+
+.ribbon .menu .contextualTab
+{
+	display:none;	
+}
+
+.ribbon .menu .contextualTab a.active
+{
+    background-color:#D3EACC;
+    border-color:#BAC9DB;
+    -moz-border-right-top-radius: 5px; /* FF1-3.6 */
+    -webkit-border-right-top-radius: 5px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-top-right-radius: 5px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    -moz-border-left-top-radius: 5px; /* FF1-3.6 */
+    -webkit-border-left-top-radius: 5px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-top-left-radius: 5px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    /* useful if you don't want a bg color from leaking outside the border: */        
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 
+}
+
+.ribbon .submenu
+{
+    display: block;
+    position: absolute;
+    left: 0px;
+    width: 100%;
+    height: 77px;
+    border: 1px solid #3b5a82;
+    border-bottom: 1px solid #9FAEC2;
+    background-image: url(../images/menu_background.png);
+    background-repeat: repeat-x;
+    margin:0px;
+    z-index: 2899; /* to display it over the 2D map in minimized state, should be less then z-index of .orb>ul*/
+    border-top: 0px;
+    padding:1px 2px;
+    -moz-border-radius: 3px; /* FF1-3.6 */
+    -webkit-border-radius: 3px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-radius: 3px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    /* useful if you don't want a bg color from leaking outside the border: */        
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 
+}
+
+.ribbon .contextualTab .submenu
+{
+    background-image: url(../images/menu_background_context.png);
+    background-repeat: repeat-x;
+}
+
+.ribbon .submenu > li
+{
+    height: 75px;
+    cursor: pointer;
+    position: relative;
+    padding: 0px 1px;
+    border: solid 1px #939598;
+    -moz-border-radius: 3px; /* FF1-3.6 */
+    -webkit-border-radius: 3px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-radius: 3px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    /* useful if you don't want a bg color from leaking outside the border: */        
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 
+    margin:0px 1px;
+}
+
+.ribbon .submenu h2
+{
+    font-family: Calibri,Arial,Trebuchet MS;
+    font-size: 10px;
+    font-weight: normal;
+    margin: 0px auto;
+    top: 63px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    position: absolute;
+    background-color:#C7C7C7;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C7C7C7', endColorstr='#a7a7a7'); /* for IE */
+	background: -webkit-gradient(linear, left top, left bottom, from(#C7C7C7), to(#a7a7a7)); /* for webkit browsers */
+	background: -moz-linear-gradient(top,  #C7C7C7,  #a7a7a7); /* for firefox 3.6+ */ 
+	white-space:nowrap;
+    color:White;
+    -moz-border-right-bottom-radius: 3px; /* FF1-3.6 */
+    -webkit-border-right-bottom-radius: 3px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-bottom-right-radius: 3px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    -moz-border-left-bottom-radius: 3px; /* FF1-3.6 */
+    -webkit-border-left-bottom-radius: 3px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-bottom-left-radius: 3px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    /* useful if you don't want a bg color from leaking outside the border: */        
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 
+}
+.ribbon .ribbon-list, .ribbon .ribbonButton
+{
+    margin: 1px;
+    margin-bottom:0px;
+    height: 57px;
+    float: left;
+    border: 1px solid transparent;
+    -moz-border-radius: 3px; /* FF1-3.6 */
+    -webkit-border-radius: 3px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-radius: 3px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    /* useful if you don't want a bg color from leaking outside the border: */        
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;     
+}
+.ribbon .ribbonButton
+{
+    padding: 1px 5px;
+    text-align: center;
+    line-height:12px;
+}
+.ribbon .ribbon-list
+{
+	padding:0px;	
+	text-align:left;
+}
+
+.ribbon .ribbonButtonHover:hover, .ribbon .ribbonButtonToggled
+{
+    background-image: url(../images/item_background.png);
+    background-repeat: repeat-x;
+    border: 1px solid #FFB700;
+}
+
+.ribbon .ribbonButtonPressed, .ribbon .ribbonButtonPressed:hover
+{
+    border: 2px solid #FF7800;
+    padding:4px;
+    padding-bottom:1px;
+    padding-top:0px;
+}
+
+.ribbon .ribbon-list  .ribbonButtonPressed, .ribbon .ribbon-list .ribbonButtonPressed:hover
+{
+    background-image: url(../images/item_small_background.png);
+}
+
+.ribbon .ribbon-list .ribbonButton
+{
+    text-align: left;
+    margin: 0px;
+    height: 15px;
+    line-height: 15px;
+    float: none;
+}
+
+.ribbon .ribbon-list input
+{
+    margin-top: 3px;
+    margin-right: 3px;
+    padding:0px;
+}
+
+.ribbon .ribbon-list .ribbonButton select
+{
+	font-size:10px;
+}
+
+.ribbon .ribbon-list .ribbonButton > img
+{
+    float: left;
+    padding: 2px;
+    padding-right: 3px;
+    height:14px;
+    width:14px;
+}
+
+.ribbon .ribbon-list .ribbonButtonHover:hover
+{
+    background-image: url(../images/item_small_background.png);
+    background-repeat: repeat-x;
+}
+
+.ribbon .ribbonButtonDropDown ul
+{
+    background-color: #fff;
+    position: absolute;
+    margin-left: -1px;
+    border: 1px solid #8492A6;
+    margin-left:-6px;
+	margin-top:0px;
+	padding:0px;
+	z-index:1000;
+}
+
+.ribbon .ribbonButtonDropDown li
+{
+	line-height:16px;
+	text-align:left;
+	white-space:nowrap;
+    background-image: url(../images/menu_dropdownitembg.png);
+    background-repeat: repeat-y;
+    margin: 0px;
+    border: 0px;
+    height: auto;
+    padding: 1px;
+    padding-left:30px;
+    padding-right:20px;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    float:none;
+    display:block;
+}
+
+.ribbon li.ribbonButtonSeparator
+{
+	border: 1px solid #DEE8EF;
+	border-bottom:1px solid #C5C5C5;
+	padding-left:5px;
+	background-image: none;
+	background-color:#EFEFEF;
+	-moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 	
+}
+
+
+.ribbon .ribbonButtonDropDown li:hover
+{
+    background-image: url(../images/menu_dropdownitembghover.png);
+    background-repeat: repeat-x;
+    border-top: 1px solid #FFB700;
+    border-bottom: 1px solid #FFB700;
+}
+
+.ribbon li:hover.ribbonButtonSeparator
+{
+	background-image: none;
+	border: 1px solid #DEE8EF;
+	border-bottom:solid 1px #C5C5C5;
+}
+
+.ribbon .ribbonButtonDropDown li img
+{
+	width:25px;	
+	height:16px;
+	position:absolute;
+	left:0px;	
+}
+.ribbon .ribbonButtonDropDown .ribbonButtonToggled img
+{
+	background-image: url(../images/menu_dropdown_check.png);	
+}
+
+.ribbon .ribbonButton img, .ribbonTooltip .ribbonTooltipIcon img
+{
+    padding-top: 0px;
+    display: block;
+    margin: 0 auto;
+    height:32px;
+    width:32px;
+}
+.ribbonTooltip .ribbonTooltipIcon img
+{
+	margin: 0px;	
+}
+.ribbon label
+{
+	cursor:pointer;	
+}
+
+.submenu > li:hover h2
+{
+    background-color:#B7B7B7;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#B7B7B7', endColorstr='#878787'); /* for IE */
+	background: -webkit-gradient(linear, left top, left bottom, from(#B7B7B7), to(#878787)); /* for webkit browsers */
+	background: -moz-linear-gradient(top,  #b7b7b7,  #878787); /* for firefox 3.6+ */ 
+}
+
+.submenu > li:hover
+{
+    background-image: url(../images/menu_background_hover.png);
+}
+
+.ribbonTooltip
+{
+	color:#4C4C6B;
+	position:absolute;
+	z-index:4000;	
+	background-color:White;
+	padding: 5px 20px 5px 5px;
+	border:solid 1px #767676;
+	background-color:#FDFDFD;
+	ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FDFDFD', endColorstr='#CFD2D6'); /* for IE 8*/
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FDFDFD', endColorstr='#CFD2D6'); /* for IE */
+	background: -webkit-gradient(linear, left top, left bottom, from(#FDFDFD), to(#CFD2D6)); /* for webkit browsers */
+	background: -moz-linear-gradient(top,  #FDFDFD,  #CFD2D6); /* for firefox 3.6+ */ 
+	width:300px;
+    display:none;
+}
+
+.ribbonTooltip .ribbonTooltipIcon
+{
+	float:left;
+	padding-right:5px;	
+}
+.ribbonTooltip .ribbonTooltipTitle
+{	
+	font-weight:bold;
+	margin-left:35px;
+	padding-bottom: 7px;
+}
+
+.ribbonTooltip .ribbonTooltipContent
+{	
+	font-size:12px;
+	line-height:16px;
+	margin-left:35px;
+}
+
+.roundedCornerAll
+{
+    -moz-border-radius: 4px; /* FF1-3.6 */
+    -webkit-border-radius: 4px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-radius: 4px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    /* useful if you don't want a bg color from leaking outside the border: */        
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 	
+}
+
+.roundedCornerTopRight
+{
+    -moz-border-right-top-radius: 3px; /* FF1-3.6 */
+    -webkit-border-right-top-radius: 3px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-top-right-radius: 3px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    /* useful if you don't want a bg color from leaking outside the border: */        
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 	
+}
+
+.roundedCornerTopLeft
+{
+    -moz-border-left-top-radius: 3px; /* FF1-3.6 */
+    -webkit-border-left-top-radius: 3px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+    border-top-left-radius: 3px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
+    /* useful if you don't want a bg color from leaking outside the border: */        
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 	
+}
+
+.ribbonIconEmpty img
+{
+	background: transparent url(../images/placeholder.png) 0px 0px no-repeat;
+}
+
+.ribbonIconTESmall > img, .ribbonIconLayerEditConvertToGroupSmall > img
+{
+	background: transparent url(../images/small.png) 0px 0px no-repeat;
+}
+.ribbonIconGoogleSmall > img
+{
+	background: transparent url(../images/small.png) -25px 0px no-repeat;
+}
+.ribbonIconImagerySmall > img
+{
+	background: transparent url(../images/small.png) -50px 0px no-repeat;
+}
+.ribbonIconElevationSmall > img
+{
+	background: transparent url(../images/small.png) -75px 0px no-repeat;
+}
+.ribbonIconPublicLayerSmall > img
+{
+	background: transparent url(../images/small.png) -100px 0px no-repeat;
+}
+.ribbonIconMyLayerSmall > img
+{
+	background: transparent url(../images/small.png) -125px 0px no-repeat;
+}
+.ribbonIconObjectVideoTerrainSmall > img
+{
+	background: transparent url(../images/small.png) -150px 0px no-repeat;
+}
+.ribbonIconObjectVideoBillboardSmall > img
+{
+	background: transparent url(../images/small.png) -175px 0px no-repeat;
+}
+.ribbonIconObjectModifyTerrainSmall > img
+{
+	background: transparent url(../images/small.png) -200px 0px no-repeat;
+}
+.ribbonIconObjectHoleOnTerrainSmall > img
+{
+	background: transparent url(../images/small.png) -225px 0px no-repeat;
+}
+.ribbonIconObjectGroundSmall > img
+{
+	background: transparent url(../images/small.png) -250px 0px no-repeat;
+}
+.ribbonIconObjectAerialSmall > img
+{
+	background: transparent url(../images/small.png) -275px 0px no-repeat;
+}
+.ribbonIconPresentationStopSmall > img
+{
+	background: transparent url(../images/small.png) -300px 0px no-repeat;
+}
+.ribbonIconPresentationPrevSmall > img
+{
+	background: transparent url(../images/small.png) -325px 0px no-repeat;
+}
+.ribbonIconPresentationNextSmall > img
+{
+	background: transparent url(../images/small.png) -350px 0px no-repeat;
+}
+.ribbonIconPrintSmall > img
+{
+	background: transparent url(../images/small.png) -375px 0px no-repeat;
+}
+.ribbonIconSnapshotSmall > img
+{
+	background: transparent url(../images/small.png) -400px 0px no-repeat;
+}
+.ribbonIconPublishOfflineKitSmall > img
+{
+	background: transparent url(../images/small.png) -425px 0px no-repeat;
+}
+.ribbonIconPublishInternetKitSmall > img
+{
+	background: transparent url(../images/small.png) -450px 0px no-repeat;
+}
+.ribbonIconPublishAreaOfflineKitSmall > img
+{
+	background: transparent url(../images/small.png) -475px 0px no-repeat;
+}
+.ribbonIconViewshedSmall > img
+{
+	background: transparent url(../images/small.png) -500px 0px no-repeat;
+}
+.ribbonIconLayerEditSaveAsSmall > img
+{
+	background: transparent url(../images/small.png) -525px 0px no-repeat;
+}
+.ribbonIconLayerEditSpatialQueryAreaSmall > img
+{
+	background: transparent url(../images/small.png) -550px 0px no-repeat;
+}
+.ribbonIconLayerEditSpatialQueryLineSmall > img
+{
+	background: transparent url(../images/small.png) -575px 0px no-repeat;
+}
+.ribbonIconLayerEditSpatialQueryPointSmall > img
+{
+	background: transparent url(../images/small.png) -600px 0px no-repeat;
+}
+.ribbonIconLayerEditSpatialQueryObjectSmall > img
+{
+	background: transparent url(../images/small.png) -625px 0px no-repeat;
+}
+.ribbonIconOptionsSmall > img
+{
+	background: transparent url(../images/small.png) -650px 0px no-repeat;
+}
+.ribbonIconViewshed3DSmall > img
+{
+	background: transparent url(../images/small.png) -675px 0px no-repeat;
+}
+.ribbonIconPasteSmall > img
+{
+	background: transparent url(../images/small.png) -700px 0px no-repeat;
+}
+.ribbonIconCopySmall > img
+{
+	background: transparent url(../images/small.png) -725px 0px no-repeat;
+}
+.ribbonIconCutSmall > img
+{
+	background: transparent url(../images/small.png) -750px 0px no-repeat;
+}
+.ribbonIconDeleteSmall > img
+{
+	background: transparent url(../images/small.png) -775px 0px no-repeat;
+}
+.ribbon .ribbonButtonDisabled, .ribbon .ribbonButtonDisabled:hover, .ribbon .ribbon-list .ribbonButtonDisabled:hover
+{
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; /* Ie 5-7 */ 
+	filter: alpha(opacity=50); /* Ie  8*/ 
+	opacity: .5; /* Normal browsers */	
+	background-image: none;
+	border: 1px solid transparent;
+}
+
+.ribbon .ribbonButtonDropDown .ribbonButtonDisabled, .ribbon .ribbonButtonDropDown .ribbonButtonDisabled:hover
+{
+    border: 0px solid transparent;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    background-image: url(../images/menu_dropdownitembg.png);
+    background-repeat: repeat-y;
+}
+
+.ribbonHelpIcon
+{
+	position:absolute;
+	top:0px;
+	right:5px;	
+	width:22px;
+	height:22px;
+	background-image:url(../images/help.gif);
+}
+.ribbonHelpIcon:hover
+{
+	background-image:url(../images/help_hover.gif);
+}
+
+.ribbonHelpIconPressed:hover
+{
+	background-image:url(../images/help_pressed.gif);
+}
