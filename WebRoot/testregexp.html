@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>宽度自适应布局</title>
+<style>
+body,div{ margin:0; padding:0;}
+
+.tool-img:hover{
+	background-color:#ffdb88;
+}
+</style>
+
+<script>
+
+function btnOnClick() {
+	var search = "****";
+	// replace _ --> .*
+	search = search.replace(new RegExp(" ",'g'), "*");
+	// replace *+ --> *
+	search = search.replace(new RegExp("\\*+",'g'), "*");
+	// replace all * --> .*
+	search = search.replace(new RegExp("\\*",'g'), ".*");
+
+	alert(search);
+}
+
+</script>
+</head>
+<body>
+<div class="tool-img">
+	<img src="images/search.png" onclick="btnOnClick();">
+</div>
+</body>
+</html>
