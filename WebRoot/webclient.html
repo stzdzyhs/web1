@@ -4,7 +4,7 @@
 <title>Web Client</title>
 
 <style>
-html, body {
+html,body {
     height:100%;
     margin:0;
     padding:0
@@ -47,9 +47,9 @@ html, body {
 
 .left { 
 	float:left; 
-	width:200px;
+	width:300px;
  	height:100%;
-	background:#00f;
+	background:#eceff1;
 	overflow:auto; 
 /* 	margin-right:-3px; */
 }
@@ -72,7 +72,7 @@ html, body {
 /* 	margin:0 8px; */
 }
 
-#eSearch:hover {
+#btnSearch:hover {
 	background-color:#ffdb88;
 }	
 
@@ -95,7 +95,7 @@ var FLY_FILE= "E:\\Skyline\\怡德小区项目\\模型\\Skyline-TDJ0810\\Default
 
 var sgworld = null;
 var houseDb = []; // the associated xlsx data
-
+var searchResult=[];
 
 /**
  * return null if not found
@@ -133,14 +133,15 @@ function scanTree() {
 
 
         // root is the first visible item in tree.
-        var root = sgworld.ProjectTree.GetNextItem("", 18 /* ItemCode.ROOT*/);
+        var root = sgworld.ProjectTree.GetNextItem("", ITEM_CODE.ROOT);
 
         // if the tree have hidden group, skip it.
 
         // find hidden group by its name. We could also check by HiddenGroupID , which is actually its parent id.
 
-        if(sgworld.ProjectTree.GetItemName(root) == sgworld.ProjectTree.HiddenGroupName)
-            root = sgworld.ProjectTree.GetNextItem(root,13 /* ItemCode.NEXT*/);
+        if(sgworld.ProjectTree.GetItemName(root) == sgworld.ProjectTree.HiddenGroupName) {
+            root = sgworld.ProjectTree.GetNextItem(root, ITEM_CODE.NEXT);
+        }
 
         var tree = buildTreeRecursive(root, 1);
 
@@ -154,8 +155,9 @@ function scanTree() {
 function buildTreeRecursive(current, indent) {
     // build padding
     var padding = "";
-    for (var i = 0; i < indent * 3; i++)
+    for (var i = 0; i < indent * 3; i++) {
         padding += "-"; 
+    }
     var result = "";
     // iterate over all siblings of current node
     while (current) {
@@ -168,13 +170,12 @@ function buildTreeRecursive(current, indent) {
         result += padding + current + " " + currentName + " objType:" + objData.ObjectType + "\r\n";
         
         // if current node is group, recursively build tree from its first child;
-        if (sgworld.ProjectTree.IsGroup(current))
-        {
-            var child = sgworld.ProjectTree.GetNextItem(current,11 /* ItemCode.CHILD */);
+        if (sgworld.ProjectTree.IsGroup(current)) {
+            var child = sgworld.ProjectTree.GetNextItem(current, ITEM_CODE.CHILD);
             result += buildTreeRecursive(child, indent + 1);
         }
         // move to next sibling
-        current = sgworld.ProjectTree.GetNextItem(current,13 /* ItemCode.NEXT*/);
+        current = sgworld.ProjectTree.GetNextItem(current, ITEM_CODE.NEXT);
     }
     return result;
 }
@@ -203,7 +204,6 @@ function readXslx() {
 		processData: false,
 		success: function(data0){
 			// do something with binary data
-			debugger;
 			var data = new Uint8Array(data0);
 			console.log("data len: " + data.length);
 			var arr = new Array();
@@ -225,7 +225,101 @@ function readXslx() {
 	});	
 }
 
+function btnSearchOnClick() {
+	var search = $("#eSearch").val();
+	if(isEmpty(search)) {
+		alert("请输入查询内容");
+		return;
+	}
+	
+	// replace _ --> *
+	search = search.replace(new RegExp(" ","g"), "*");
+	// replace *... --> .*
+	search = search.replace(new RegExp("\\*+","g"), ".*");
+	var re = new RegExp(search, "g");
+	
+	searchResult = [];
+	$("#eResult").empty();
+	
+	var i;
+	for(i=0;i<houseDb.length;i++) {
+		var h = houseDb[i];
+		if(re.test(h.buildingNo)) {
+			searchResult.push(h);
+		}
+		else if(re.test(h.unit)) {
+			searchResult.push(h);
+		}
+		else if(re.test(h.level)) {
+			searchResult.push(h);
+		}
+		else if(re.test(h.houseNo)) {
+			searchResult.push(h);
+		}
+		else if(re.test(h.holderName)) {
+			searchResult.push(h);
+		}
+		else if(re.test(h.renterName)) {
+			searchResult.push(h);
+		}
+		else if(re.test(h.houseType)) {
+			searchResult.push(h);
+		}
+		else if(re.test(h.type)) {
+			searchResult.push(h);
+		}
+		else if(re.test(h.buildingNo+h.houseNo)) {
+			searchResult.push(h);
+		}
+	}
+	
+	if(searchResult.length<1) {
+		alert("没有查到数据");
+		return;
+	}
+	
+	renderResultData(searchResult);
+}
+
+/**
+ * idx - 为searchResult里面的index
+ */
+function gotoObject(idx) {
+	if (searchResult[idx]==null) return;
+	var data = searchResult[idx];
+	var obj = sgworld.ProjectTree.FindItem(data.skylineId);
+	if (obj!=null) {
+		obj.Text = "the text set in javascript ....";
+		sgworld.Navigate.FlyTo(obj,0);
+	}
+}
+
+function renderResultData(searchResult) {
+	var tmp = 
+	"<div onclick='gotoObject({idx});'> {title}" +
+		//"<a onclick= />{title}</a>" + 
+  	"</div>";
+  	
+	
+  	var data;
+	for(i=0;i<searchResult.length;i++) {
+		data = searchResult[i];
+  		html = String.format2(tmp, {idx:i, title:data.houseNo});
+  		//alert("html: " + html);
+		$("#eResult").append(html);
+	}
+}
+
 function onload() {
+	readXslx();
+	
+	$("#btnSearch").click(btnSearchOnClick);
+    $('#eSearch').bind('keypress',function(event) {
+        if(event.keyCode==VK_ENTER) {
+            btnSearchOnClick();
+        }
+    });	
+	
 	try {
 		sgworld = new ActiveXObject("TerraExplorerX.SGWorld66");
 	}
@@ -266,15 +360,10 @@ function onload() {
 		}, 1000);
 	}
 	
-	
-	
-	
-
-	//scanTree();
+	scanTree();
 
     //sgworld.Navigate.FlyTo("yide1",0);
 		
-	readXslx();
 }
 </script>
 
@@ -287,15 +376,15 @@ function onload() {
 <div id="dHead">
 	<div style="padding:5px;">
 	公司logo ....
-	<input id="eInput"/>
-	<img id="eSearch" width="32px" height="32px" src="images/search.png"  style="vertical-align:middle;">
+	<input id="eSearch"/>
+	<img id="btnSearch" width="32px" height="32px" src="images/search.png"  style="vertical-align:middle;">
 	</div>
 </div>
 
 <div id="dBody">
 	
 <div class="left">
-	<div id="eResult" style="padding:3px;">
+	<div id="eResult" style="padding:10px;">
 	</div>
 </div>
 

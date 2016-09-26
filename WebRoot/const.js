@@ -11,3 +11,6 @@ var ITEM_CODE={
     PREVIOUSVISIBLE:17,
     ROOT:18
 };
+
+
+var VK_ENTER=13;
