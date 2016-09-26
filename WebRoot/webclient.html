@@ -287,7 +287,7 @@ function btnSearchOnClick() {
 function gotoObject(idx) {
 	if (searchResult[idx]==null) return;
 	var data = searchResult[idx];
-	var obj = sgworld.ProjectTree.FindItem(data.skylineId);
+	var obj = sgworld.ProjectTree.FindItem(data.skylineId); // skylineId: 1号楼\201
 	if (obj!=null) {
 		obj.Text = "the text set in javascript ....";
 		sgworld.Navigate.FlyTo(obj,0);
