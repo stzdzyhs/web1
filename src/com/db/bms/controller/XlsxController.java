@@ -112,7 +112,7 @@ public class XlsxController {
 			String fileName = ft + (new SimpleDateFormat("yyyy_MM_dd_HH_mm")).format(new Date()) + ".xlsx";
 			
 			// to fix chn char missing.
-			//fileName= new String(fileName.getBytes("utf-8"), "ISO_8859_1");
+			fileName= new String(fileName.getBytes("utf-8"), "ISO_8859_1");
 			
 			response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 			response.setHeader("Content-Disposition", "attachment;Filename="+fileName);

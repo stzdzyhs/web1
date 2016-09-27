@@ -137,6 +137,7 @@ var searchInfo={
 
 var selectBox = null;
 var selectBoxOrigColor = 0;
+var SELECTED_COLOR=0x0000ff; // red
 
 /**
  * return null if not found
@@ -483,6 +484,19 @@ function search(wholeFamily, searchFunc) {
 }
 
 
+//return family(members) data
+function searchAddrBySkylineId(path) {
+	var m = null;
+	$.each(houseDb, function(key, members) {
+		var j;
+		if(members[0].skylineId==path) {
+			m = members;
+			return false;
+		}
+	});
+	return m;
+}
+
 function btnSearchOnClick() {
 	var schTxt0 = $("#eSearch").val();
 	var schTxt = schTxt0; 
@@ -550,6 +564,32 @@ function dumpobj(obj) {
 	return ret;
 }
 
+function familyToString(members) {
+	var t1 = "地址:{address}\r\n房屋地址:{houseAddress}\r\n";
+	var msgTxt = String.format2(t1,{
+		address:members[0].address, 
+		houseAddress:members[0].houseAddress
+	});
+	
+	var t2 = "姓名:{name} 性别:{sex} 年龄:{age}\r\n身份证号码:{cid}\r\n迁入时间:{inDate}\r\n电话:{tel}"
+	for(i=0;i<members.length;i++) {
+		var m = members[i];
+		if(m.matched) {
+			msgTxt += "\r\n";
+			msgTxt += String.format2(t2, {
+				name:m.name, 
+				sex:antiNull(m.sex), 
+				age:antiNull(getAge(m)),
+				cid:antiNull(m.cid),
+				inDate:antiNull(m.inDate),
+				tel:antiNull(m.tel)
+			});
+			msgTxt += "\r\n";
+		}
+	}
+	return msgTxt;
+}
+
 /**
  * 点击搜索结果处理函数
  */
@@ -589,29 +629,8 @@ function gotoObject(addr) {
 
 	var msg = sgworld.Creator.CreatePopupMessage("信息", "", 10, 10, 450, 200, -1);
 	var i;
-	var msgTxt;
-	var t1 = "地址:{address}\r\n房屋地址:{houseAddress}\r\n";
-	msgTxt = String.format2(t1,{
-		address:members[0].address, 
-		houseAddress:members[0].houseAddress
-	});
+	var msgTxt = familyToString(members);
 	
-	var t2 = "姓名:{name} 性别:{sex} 年龄:{age}\r\n身份证号码:{cid}\r\n迁入时间:{inDate}\r\n电话:{tel}"
-	for(i=0;i<members.length;i++) {
-		var m = members[i];
-		if(m.matched) {
-			msgTxt += "\r\n";
-			msgTxt += String.format2(t2, {
-				name:m.name, 
-				sex:antiNull(m.sex), 
-				age:antiNull(getAge(m)),
-				cid:antiNull(m.cid),
-				inDate:antiNull(m.inDate),
-				tel:antiNull(m.tel)
-			});
-			msgTxt += "\r\n";
-		}
-	}
 	msg.InnerText = msgTxt; 
 	obj.Message.MessageID = msg.ID;
 	
@@ -621,8 +640,7 @@ function gotoObject(addr) {
     		selectBox.Terrain.Tint.FromBGRColor(selectBoxOrigColor);
         	//selectBox.Terrain.Tint.SetAlpha(0);
         }
-	    var nBGRValue1 = 0x0000ff; // 0x00BBGGRR!!!
-        obj.Terrain.Tint.FromBGRColor(nBGRValue1);
+        obj.Terrain.Tint.FromBGRColor(SELECTED_COLOR);
         //obj.Terrain.Tint.SetAlpha(0.5);
 		selectBox = obj;
     }
@@ -706,6 +724,34 @@ function onTerraExplorerMessage(messageId, senderNodeId) {
 }
 */
 
+/**
+ * get path of object speicified by objid 
+ * return null if can not get
+ */
+function objectIdToPath(objid) 
+{
+    var pt = sgworld.ProjectTree;
+    
+    var path = pt.GetItemName(objid);
+    if(isEmpty(path)) return null;
+    
+    var p = pt.GetNextItem(objid, ITEM_CODE.PARENT);
+    while(!isEmpty(p)) {
+        var name = obj = pt.GetItemName(p);
+        if(!isEmpty(name)) {
+        	path = name + "\\" + path;
+        }
+        else {
+        	break;
+        }
+       	
+       	objid = p;
+       	p = pt.GetNextItem(objid, ITEM_CODE.PARENT);
+    }
+    return path;
+}
+
+
 function sgworld_OnLButtonDown(flags, x, y)
 {
     var pIWorldPointInfo = sgworld.Window.PixelToWorld(x, y, WorldPointType.WPT_DEFAULT);
@@ -714,18 +760,35 @@ function sgworld_OnLButtonDown(flags, x, y)
     {
         if ((pIWorldPointInfo.Type == WorldPointType.WPT_PRIMITIVE))
         {
-            if (selectBox != null)   //取消上一个高亮物体的高亮。
-            {
-                selectBox.Terrain.Tint.SetAlpha(0);
-            }
-            var pITerrainBox = sgworld.Creator.GetObject(toid);
-            var nBGRValue1 = 0xff0000; //0x8080ff;
-            pITerrainBox.Terrain.Tint.FromBGRColor(nBGRValue1);
-            pITerrainBox.Terrain.Tint.SetAlpha(0.5);
-            selectBox = pITerrainBox;
+        	var path = objectIdToPath(toid);
+        	if(isEmpty(path)) return;
+        	
+        	var msgTxt;
+        	var m = searchAddrBySkylineId(path);
+        	if(m!=null) {
+        		 msgTxt = familyToString(m);
+        	}
+        	else {
+        		msgTxt = "暂无位置数据";
+        	}
+        	
+        	var msg = sgworld.Creator.CreatePopupMessage("信息", "", 10, 10, 450, 200, -1);
+        	msg.InnerText = msgTxt;
+        	
+        	var obj = sgworld.ProjectTree.GetObject(toid);
+        	obj.Message.MessageID = msg.ID;
+        	//sgworld.Window.ShowPopup(msg);
+
+        	// highlight selected
+	    	if (selectBox != null) {
+	    		selectBox.Terrain.Tint.FromBGRColor(selectBoxOrigColor);
+	        }
+	        obj.Terrain.Tint.FromBGRColor(SELECTED_COLOR);
+	        //obj.Terrain.Tint.SetAlpha(0.5);
+			selectBox = obj;
         }
     }
-    return false; // 这里不能return true；否则导致不能浏览三维。
+    return false;//false; // 这里不能return true；否则导致不能浏览三维。
 }
 
 function exportSearch() {
