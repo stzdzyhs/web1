@@ -135,6 +135,7 @@ var searchInfo={
 //var searchResult=[];
 
 var selectBox = null;
+var selectBoxOrigColor = 0;
 
 /**
  * return null if not found
@@ -607,19 +608,21 @@ function gotoObject(addr) {
 				inDate:antiNull(m.inDate),
 				tel:antiNull(m.tel)
 			});
+			msgTxt += "\r\n";
 		}
 	}
 	msg.InnerText = msgTxt; 
 	obj.Message.MessageID = msg.ID;
 	
     //设置高亮
-    if(obj.ObjectType==ObjectType.OT_RECTANGLE) {
+    if(obj.ObjectType==ObjectType.OT_RECTANGLE || obj.ObjectType==ObjectType.OT_BOX) {
     	if (selectBox != null) {
-        	selectBox.Terrain.Tint.SetAlpha(0);
+    		selectBox.Terrain.Tint.FromBGRColor(selectBoxOrigColor);
+        	//selectBox.Terrain.Tint.SetAlpha(0);
         }
-	    var nBGRValue1 = 0xff0000;
+	    var nBGRValue1 = 0x0000ff; // 0x00BBGGRR!!!
         obj.Terrain.Tint.FromBGRColor(nBGRValue1);
-        obj.Terrain.Tint.SetAlpha(0.5);
+        //obj.Terrain.Tint.SetAlpha(0.5);
 		selectBox = obj;
     }
 	sgworld.Navigate.FlyTo(obj,0);
@@ -863,6 +866,12 @@ $(document).ready(function() {
 		  		广州市白云区怡德小区三维数字社区	  		
 	  	</div>
   	</div>
+  	
+	<div style="float:right;">
+		<a style="display:inline-block;" href="help.html" target="_blank">
+	    	<img alt="company logo" style="width:90px;height:90px;" src="images/help.png"/>
+	  	</a>
+	</div>  	
 
 </div>
 
