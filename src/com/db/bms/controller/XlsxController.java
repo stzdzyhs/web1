@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +20,7 @@ import com.db.bms.service.XlsxService;
 @Controller
 public class XlsxController {
 
-	private final static Logger logger = Logger.getLogger(XlsxController.class);
+	//private final static Logger logger = Logger.getLogger(XlsxController.class);
 	
 	@Autowired
 	XlsxService xlsxService;

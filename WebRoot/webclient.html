@@ -18,7 +18,9 @@ html,body {
     position:absolute;
 /*     z-index:5; */
     top:0;
-    text-align:center;
+    box-sizing:border-box;
+    padding:15px 35px 10px 15px;
+/*     text-align:center; */
 }
 #dBody {
 /*     background:#FC0; */
@@ -42,7 +44,7 @@ html,body {
 /*     z-index:200; */
     position:absolute;
     bottom:0;
-    text-align:center;
+/*     text-align:center; */
 }
 
 .left { 
@@ -76,6 +78,10 @@ html,body {
 	background-color:#ffdb88;
 }	
 
+.logo-android {
+	display: inline-block;
+}
+
 </style>
 
 <script src="js/jquery/jquery-1.11.3.js"></script>
@@ -91,7 +97,7 @@ html,body {
 <script>
 
 // need to modify this path !!!
-var FLY_FILE= "E:\\Skyline\\怡德小区项目\\模型\\Skyline-TDJ0810\\Default.fly";
+var FLY_FILE= "e:\\skyline\\怡德小区项目\\模型\\Skyline-TDJ0810\\Default.fly";
 
 var sgworld = null;
 var houseDb = []; // the associated xlsx data
@@ -145,7 +151,7 @@ function scanTree() {
 
         var tree = buildTreeRecursive(root, 1);
 
-        //alert(tree);
+        alert(tree);
     }
     catch (ex) {
        alert("Unexpected error: " + ex.description);
@@ -167,7 +173,12 @@ function buildTreeRecursive(current, indent) {
         if(objData==null) {
         	objData = {ObjectType:'null'};
         }
-        result += padding + current + " " + currentName + " objType:" + objData.ObjectType + "\r\n";
+       	result += padding + current + " " + currentName + " objType:" + objData.ObjectType + "";
+       	if (objData.ObjectType==8) { // Box
+       		result += " width: " + objData.Width;
+       		result += " height: " + objData.Height;
+       	}
+       	result += "\r\n";
         
         // if current node is group, recursively build tree from its first child;
         if (sgworld.ProjectTree.IsGroup(current)) {
@@ -180,6 +191,9 @@ function buildTreeRecursive(current, indent) {
     return result;
 }
 
+/**
+ * process xlsx workbook
+ */
 function processWb(workbook) {
 	houseDb = [];
 
@@ -197,6 +211,7 @@ function processWb(workbook) {
 
 function readXslx() {
 	var xlsxFilename = getXlsxFilename(FLY_FILE);
+	//alert("xlsx filename: " + xlsxFilename);
 	$.ajax({
 		url: "xlsx/" + xlsxFilename,
 		type: "GET",
@@ -217,7 +232,7 @@ function readXslx() {
 			var wb = XLSX.read(arr.join(""), {type:"binary"});
 			processWb(wb);
 			//console.log("zc: " + zc);
-			alert("houseDb : " + houseDb.length);
+			//alert("houseDb : " + houseDb.length);
 		},
 		failure: function() {
 			alert("读取xlsx文件失败:");			
@@ -232,7 +247,7 @@ function btnSearchOnClick() {
 		return;
 	}
 	
-	// replace _ --> *
+	// replace whiteSpace --> *
 	search = search.replace(new RegExp(" ","g"), "*");
 	// replace *... --> .*
 	search = search.replace(new RegExp("\\*+","g"), ".*");
@@ -281,16 +296,50 @@ function btnSearchOnClick() {
 	renderResultData(searchResult);
 }
 
+
+function dumpobj(obj) {
+	var ret = "";
+	for(var x in obj) {
+		ret = ret + " " + x;
+	}
+	return ret;
+}
+
 /**
+ * 点击搜索结果处理函数
  * idx - 为searchResult里面的index
  */
 function gotoObject(idx) {
 	if (searchResult[idx]==null) return;
 	var data = searchResult[idx];
-	var obj = sgworld.ProjectTree.FindItem(data.skylineId); // skylineId: 1号楼\201
-	if (obj!=null) {
-		obj.Text = "the text set in javascript ....";
-		sgworld.Navigate.FlyTo(obj,0);
+	var objId = sgworld.ProjectTree.FindItem(data.skylineId); // skylineId: 1号楼\201
+	//debugger;
+	if (objId!="") {		
+		var obj = sgworld.ProjectTree.GetObject(objId);
+		//alert("text: " + obj.Text);
+		var ret = dumpobj(obj);
+		var name = obj.Name;
+		var x = obj.Message;
+		var v;
+		/*
+		v = obj.ObjectType;
+		v = obj.Message.MessageID;
+		v = obj.Message.ObjectType;
+		v = obj.Message.GetMessageObject().ObjectType;
+		v= obj.Message.GetMessageObject().Text;
+		*/
+		
+		//obj.Message.GetMessageObject().InnerText = "the text set in js....";
+
+		//debugger;
+		var msg = sgworld.Creator.CreatePopupMessage("msg", "", 10, 10, 450, 200, 9000);
+		msg.InnerText = data.buildingNo + " " + data.unit + " " + data.holderName + " " ;
+		obj.Message.MessageID = msg.ID;
+		
+		//obj.Text = "the text set in javascript ....";
+		setTimeout(function() {
+			sgworld.Navigate.FlyTo(objId,0);
+		}, 300);
 	}
 }
 
@@ -299,7 +348,6 @@ function renderResultData(searchResult) {
 	"<div onclick='gotoObject({idx});'> {title}" +
 		//"<a onclick= />{title}</a>" + 
   	"</div>";
-  	
 	
   	var data;
 	for(i=0;i<searchResult.length;i++) {
@@ -309,6 +357,16 @@ function renderResultData(searchResult) {
 		$("#eResult").append(html);
 	}
 }
+
+
+function onTerraExplorerMessage(messageId, senderNodeId)
+{
+	alert("on Message");
+    var message = SGWorld.Creator.GetObject(messageId);
+    var senderNode = SGWorld.Creator.GetObject(senderNodeId);
+    senderNode.Text = message.Text;
+}
+
 
 function onload() {
 	readXslx();
@@ -329,20 +387,42 @@ function onload() {
 	}
 	
 	sgworld.IgnoreAccelerators = true;
-		
+	
+	sgworld.AttachEvent("onTerraExplorerMessage", onTerraExplorerMessage);
+
 	var te3dwin = document.getElementById("te3dwin");
 	var c = te3dwin.Caption;
 	//alert(c);	
 		
 	sgworld.Project.Open(FLY_FILE, false);
-		
+	
 	// fly to first object
 	var id = getFirstObject();
+
 	if(id!=null) {
 		// why FlyTo must run after some time ???
 		setTimeout(function() {
 			//alert("flyto: " + id);
-			sgworld.Navigate.FlyTo(id,0);
+
+			//var obj = sgworld.Creator.GetObject("0_620831");
+			//obj.FillStyle.Color.FromHTMLColor("ff0000");
+			
+	        //var msg = sgworld.Creator.CreateMessage(0, "the text set in javascript....",0,true);
+	        //obj.Message.MessageID = msg.ID;
+	        //v = obj.Message.MessageID;
+	        //sgworld.Project.Save();
+	        
+			sgworld.Navigate.FlyTo(id, 18); 
+			//sgworld.Navigate.FlyTo(id,0);
+
+	        // test code			
+			//sgworld.AttachEvent("onTerraExplorerMessage", onTerraExplorerMessage);
+			//var label = sgworld.Creator.CreateTextLabel(sgworld.Creator.CreatePosition(-71.00425, 42.36081, 100), 
+		    //      "Click here to get the name of the airport",sgworld.Creator.CreateLabelStyle());
+
+			//var msg = sgworld.Creator.CreateMessage(0, "Logan International",0);
+		    //label.Message.MessageID = msg.ID;
+		    //sgworld.Navigate.JumpTo(label);        	
 			
 			/*
 			var ps = "";
@@ -360,10 +440,8 @@ function onload() {
 		}, 1000);
 	}
 	
-	scanTree();
-
+	//scanTree();
     //sgworld.Navigate.FlyTo("yide1",0);
-		
 }
 </script>
 
@@ -374,10 +452,14 @@ function onload() {
 <object id="sgworld" classid="CLSID:3A4F9197-65A8-11D5-85C1-0001023952C1" style="visibility:hidden;height:0px;"></object> -->
 
 <div id="dHead">
-	<div style="padding:5px;">
-	公司logo ....
-	<input id="eSearch"/>
-	<img id="btnSearch" width="32px" height="32px" src="images/search.png"  style="vertical-align:middle;">
+
+	<a class="logo-android" href="./">
+    	<img alt="company logo" src="images/logo-android-green_1x.png">
+  	</a>
+
+	<div style="float:right;">
+		<input id="eSearch"/>
+		<img id="btnSearch" width="32px" height="32px" src="images/search.png"  style="vertical-align:middle;">
 	</div>
 </div>
 
@@ -400,10 +482,22 @@ function onload() {
 	
 </div>
 
-<div id="dFoot">
-	<div style="padding:5px;background:green;">
-
+<div id="dFoot" style="padding:28px 36px;background:#b0bec5;color:#fff;display:block;box-sizing:border-box;">
+	<div style="display:inline-block;box-sizing:border-box;">
+		<p>
+	    	<a href="https://www.google.com/intl/en_us/policies/" target="_blank">
+	        	**某某某某某某某某公司
+	        </a>
+		</p>
 	</div>
+	    
+	<ul style="float:right;margin:10px -10px;font-weight:300;font-size:16px;line-height:1.6;list-style:none;">
+		<li>
+	    	<a href="https://plus.google.com/+android/posts" target="_blank" title="Find Android on Google+" data-g-event="site-footer-social" data-g-action="clicked" data-g-label="g-plus">
+	        	其他链接...
+	        </a>
+		</li>
+	</ul>
 </div>
 
 </body>
