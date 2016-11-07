@@ -24,11 +24,15 @@ html,body {
 }
 #dBody {
 /*     background:#FC0; */
+	display: flex;
+  	flex-direction: row;
+
     width:100%;
-	overflow:auto; 
-/*     overflow:hide; */
+	/*overflow:auto;*/ 
+    overflow:hide; 
 /*     z-index:10; */
     position:absolute;
+    clear:none;
     top:100px;
     bottom:100px;
 }
@@ -48,11 +52,14 @@ html,body {
 }
 
 .left { 
-	float:left; 
+/* 	float:left; */
+	flex: 0 0 auto; 
+ 	/*display:block;*/
 	width:300px;
  	height:100%;
 	background:#eceff1;
-	overflow:auto; 
+	overflow:auto;
+	padding:8px; 
 /* 	margin-right:-3px; */
 }
 .right { 
@@ -63,10 +70,13 @@ html,body {
 /* 	margin-left:-3px; */
 }
 .center { 
- 	background:#333;
+ 	background:#ccc;
  	height:100%;
- 	clear:none;
-  	overflow:auto;
+/*  	display:block; */
+/*  	clear:none; */
+/*  	float:right; */
+  	flex: 1 1 auto;
+  	overflow:hidden;
   	padding:0px;
   	margin:0px;
   	border:0px;
@@ -85,6 +95,10 @@ html,body {
 </style>
 
 <script src="js/jquery/jquery-1.11.3.js"></script>
+
+<script type="text/javascript" src="js/jquery-resizable/jquery-resizable.js"></script>
+<link rel="stylesheet" type="text/css" href="js/jquery-resizable/css/style.css">
+
 <script src="const.js"></script>
 <script src="js/jquery.binarytransport.js"></script>
 <script src="js/util.js"></script>
@@ -97,11 +111,15 @@ html,body {
 <script>
 
 // need to modify this path !!!
-var FLY_FILE= "e:\\skyline\\怡德小区项目\\模型\\Skyline-TDJ0810\\Default.fly";
+//var FLY_FILE= "e:\\skyline\\怡德小区项目\\模型\\Skyline-TDJ0810\\Default.fly";
+var FLY_FILE= "e:\\skyline\\怡德\\怡德1101\\Default1101.fly";
+
 
 var sgworld = null;
 var houseDb = []; // the associated xlsx data
 var searchResult=[];
+
+var selectBox = null;
 
 /**
  * return null if not found
@@ -201,7 +219,7 @@ function processWb(workbook) {
 		var data = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
 		if(data.length > 0){
 			for(var i=0;i<data.length;i++) {
-				if(data[i].skylineId!=null && data[i].skylineId!="") {
+				if(data[i].address!=null && data[i].address!="" &&  data[i].address!="住址") {
 					houseDb.push(data[i]);
 				}
 			}
@@ -232,7 +250,11 @@ function readXslx() {
 			var wb = XLSX.read(arr.join(""), {type:"binary"});
 			processWb(wb);
 			//console.log("zc: " + zc);
-			//alert("houseDb : " + houseDb.length);
+			
+			alert("houseDb : " + houseDb.length);
+			for(i=0;i<houseDb.length;i++) {
+				//console.log(i + " " + JSON.stringify(houseDb[i]));
+			}
 		},
 		failure: function() {
 			alert("读取xlsx文件失败:");			
@@ -247,6 +269,12 @@ function btnSearchOnClick() {
 		return;
 	}
 	
+	// show left search result
+	var w = parseInt($("#dvLeft").width(),10);
+	if(w<100) {
+		$("#dvLeft").animate({width:"300px"});
+	}
+	
 	// replace whiteSpace --> *
 	search = search.replace(new RegExp(" ","g"), "*");
 	// replace *... --> .*
@@ -258,32 +286,23 @@ function btnSearchOnClick() {
 	
 	var i;
 	for(i=0;i<houseDb.length;i++) {
-		var h = houseDb[i];
-		if(re.test(h.buildingNo)) {
+		var h = houseDb[i];	
+		if(re.test(h.address)) {
 			searchResult.push(h);
 		}
-		else if(re.test(h.unit)) {
+		else if(re.test(h.houseAddress)) {
 			searchResult.push(h);
 		}
-		else if(re.test(h.level)) {
+		else if(re.test(h.name)) {
 			searchResult.push(h);
 		}
-		else if(re.test(h.houseNo)) {
+		else if(search.length>7 && re.test(h.cid)) {// not test cid if too short
 			searchResult.push(h);
 		}
-		else if(re.test(h.holderName)) {
+		else if(re.test(h.aid)) {
 			searchResult.push(h);
 		}
-		else if(re.test(h.renterName)) {
-			searchResult.push(h);
-		}
-		else if(re.test(h.houseType)) {
-			searchResult.push(h);
-		}
-		else if(re.test(h.type)) {
-			searchResult.push(h);
-		}
-		else if(re.test(h.buildingNo+h.houseNo)) {
+		else if(re.test(h.tel)) {
 			searchResult.push(h);
 		}
 	}
@@ -312,60 +331,111 @@ function dumpobj(obj) {
 function gotoObject(idx) {
 	if (searchResult[idx]==null) return;
 	var data = searchResult[idx];
-	var objId = sgworld.ProjectTree.FindItem(data.skylineId); // skylineId: 1号楼\201
-	//debugger;
-	if (objId!="") {		
-		var obj = sgworld.ProjectTree.GetObject(objId);
-		//alert("text: " + obj.Text);
-		var ret = dumpobj(obj);
-		var name = obj.Name;
-		var x = obj.Message;
-		var v;
-		/*
-		v = obj.ObjectType;
-		v = obj.Message.MessageID;
-		v = obj.Message.ObjectType;
-		v = obj.Message.GetMessageObject().ObjectType;
-		v= obj.Message.GetMessageObject().Text;
-		*/
-		
-		//obj.Message.GetMessageObject().InnerText = "the text set in js....";
-
-		//debugger;
-		var msg = sgworld.Creator.CreatePopupMessage("msg", "", 10, 10, 450, 200, 9000);
-		msg.InnerText = data.buildingNo + " " + data.unit + " " + data.holderName + " " ;
-		obj.Message.MessageID = msg.ID;
-		
-		//obj.Text = "the text set in javascript ....";
-		setTimeout(function() {
-			sgworld.Navigate.FlyTo(objId,0);
-		}, 300);
+	if(isEmpty(data.skylineId)) {
+		alert("暂无3d数据");
+		return;
 	}
+	
+	var objId = sgworld.ProjectTree.FindItem(data.skylineId); // skylineId: 1号楼\201
+	if(isEmpty(objId)) {
+		alert("暂无3d数据:" + data.skylineId);
+		return;
+	}
+	
+	var obj = sgworld.ProjectTree.GetObject(objId);
+	//alert("text: " + obj.Text);
+	var ret = dumpobj(obj);
+	var name = obj.Name;
+	var x = obj.Message;
+	var v;
+	/*
+	v = obj.ObjectType;
+	v = obj.Message.MessageID;
+	v = obj.Message.ObjectType;
+	v = obj.Message.GetMessageObject().ObjectType;
+	v= obj.Message.GetMessageObject().Text;
+	*/
+	
+	//obj.Message.GetMessageObject().InnerText = "the text set in js....";
+
+	//debugger;
+	var msg = sgworld.Creator.CreatePopupMessage("msg", "", 10, 10, 450, 200, -1);
+	msg.InnerText = data.address + "\r\n" + antiNull(data.houseAddress) + "\r\n" + data.name 
+	    + " "  + antiNull(data.tel);
+	obj.Message.MessageID = msg.ID;
+	
+    //设置高亮
+    if(obj.ObjectType==ObjectType.OT_RECTANGLE) {
+    	if (selectBox != null) {
+        	selectBox.Terrain.Tint.SetAlpha(0);
+        }
+	    var nBGRValue1 = 0xff0000;
+        obj.Terrain.Tint.FromBGRColor(nBGRValue1);
+        obj.Terrain.Tint.SetAlpha(0.5);
+		selectBox = obj;
+    }
+	
+    var pos = sgworld.Creator.CreatePosition(obj.Position.X+0.00045, // X
+    		obj.Position.Y, // Y
+    		obj.Position.Altitude,     // Altitude
+               0, //AltitudeTypeCode.ATC_TERRAIN_RELATIVE, // Altitude type
+               obj.Position.Yaw,      // Yaw
+               0);     // Pitch
+	
+	sgworld.Navigate.FlyTo(obj,0);
+	
+    setTimeout(function() {
+    	sgworld.Navigate.SetPosition(pos);               
+    }, 2000);
 }
 
 function renderResultData(searchResult) {
-	var tmp = 
-	"<div onclick='gotoObject({idx});'> {title}" +
-		//"<a onclick= />{title}</a>" + 
-  	"</div>";
-	
+	var tmp =
+"<div style='border-bottom:1px solid #888;overflow:hidden;padding:8px;' onclick='gotoObject({idx});'>" +
+	"<div style='font-size:16px;'>{address}</div>" +
+    "<div style='font-size:12px;'>{holder}</div>" +  
+"</div>";		
+		
   	var data;
 	for(i=0;i<searchResult.length;i++) {
 		data = searchResult[i];
-  		html = String.format2(tmp, {idx:i, title:data.houseNo});
+  		html = String.format2(tmp, {idx:i, address:data.address, holder:data.name + " " + antiNull(data.tel) + " " + antiNull(data.skylineId) });
   		//alert("html: " + html);
 		$("#eResult").append(html);
 	}
 }
 
-
-function onTerraExplorerMessage(messageId, senderNodeId)
-{
+/*
+function onTerraExplorerMessage(messageId, senderNodeId) {
 	alert("on Message");
     var message = SGWorld.Creator.GetObject(messageId);
     var senderNode = SGWorld.Creator.GetObject(senderNodeId);
     senderNode.Text = message.Text;
 }
+*/
+
+function sgworld_OnLButtonDown(flags, x, y)
+{
+    var pIWorldPointInfo = sgworld.Window.PixelToWorld(x, y, WorldPointType.WPT_DEFAULT);
+    var toid = pIWorldPointInfo.ObjectID;
+    if (toid != null && toid != "")
+    {
+        if ((pIWorldPointInfo.Type == WorldPointType.WPT_PRIMITIVE))
+        {
+            if (selectBox != null)   //取消上一个高亮物体的高亮。
+            {
+                selectBox.Terrain.Tint.SetAlpha(0);
+            }
+            var pITerrainBox = sgworld.Creator.GetObject(toid);
+            var nBGRValue1 = 0xff0000; //0x8080ff;
+            pITerrainBox.Terrain.Tint.FromBGRColor(nBGRValue1);
+            pITerrainBox.Terrain.Tint.SetAlpha(0.5);
+            selectBox = pITerrainBox;
+        }
+    }
+    return false; // 这里不能return true；否则导致不能浏览三维。
+}
+
 
 
 function onload() {
@@ -388,7 +458,10 @@ function onload() {
 	
 	sgworld.IgnoreAccelerators = true;
 	
-	sgworld.AttachEvent("onTerraExplorerMessage", onTerraExplorerMessage);
+	//sgworld.AttachEvent("onTerraExplorerMessage", onTerraExplorerMessage);
+	
+	sgworld.AttachEvent("onLButtonDown", sgworld_OnLButtonDown);
+
 
 	var te3dwin = document.getElementById("te3dwin");
 	var c = te3dwin.Caption;
@@ -443,43 +516,84 @@ function onload() {
 	//scanTree();
     //sgworld.Navigate.FlyTo("yide1",0);
 }
+
+
+$(document).ready(function() {
+	$("#dvLeft").resizable({
+		handleSelector: ".splitter",
+		resizeHeight: false,
+		onDrag:function(e, $el, newWidth, newHeight, opt) {
+			//console.log("e " + JSON.stringify(e));
+			//console.log("el : " + JSON.stringify($el));
+			//console.log("new widht: " + newWidth);
+			//console.log("newHeight : " + newHeight);
+			//console.log("opt : " + JSON.stringify(opt) + " win width:" + window.innerWidth);
+			// max: 300 px
+			if(newWidth>400) {
+				return false;
+			}
+			return true;
+		}   
+	});
+	
+	$("#splitter1").dblclick(function() {
+		var w = parseInt($("#dvLeft").width(),10);
+		if(w<100) {
+			$("#dvLeft").animate({width:"300px"});
+		}
+		else {
+			$("#dvLeft").animate({width:"0px"});
+		}
+	});
+	
+	onload();	
+});
 </script>
 
 </head>
-<body onload="onload();">
+<body>
 
 <!-- this not work ! 
 <object id="sgworld" classid="CLSID:3A4F9197-65A8-11D5-85C1-0001023952C1" style="visibility:hidden;height:0px;"></object> -->
 
 <div id="dHead">
-
 	<a class="logo-android" href="./">
     	<img alt="company logo" src="images/logo-android-green_1x.png">
   	</a>
 
 	<div style="float:right;">
-		<input id="eSearch"/>
+		<input id="eSearch" size="30"/>
 		<img id="btnSearch" width="32px" height="32px" src="images/search.png"  style="vertical-align:middle;">
 	</div>
 </div>
 
 <div id="dBody">
-	
-<div class="left">
-	<div id="eResult" style="padding:10px;">
+	<div id="dvLeft" class="left">
+		<div id="eResult" style="padding:5px;">
+			<h2>搜索结果</h2>
+		</div>
+		
+		<!-- 
+		<div style='border-bottom:1px solid #888;overflow:hidden;padding:8px;' onclick='gotoObject({idx});'>
+			<div style="font-size:16px;">address111...1111111111111111</div>
+			<div style="font-size:12px;">名字 13925031491...</div> 
+	  	</div>
+		<div style='border-bottom:1px solid #888;overflow:hidden;padding:8px;' onclick='gotoObject({idx});'>
+			<div style="font-size:16px;">address2222222222222222222222</div>
+			<div style="font-size:12px;">名字 13925031491...</div> 
+	  	</div>
+ 		-->	  	
+	  			
 	</div>
-</div>
-
-<div class="right"></div>
-<div class="center">
-
-<!-- <div style="background:yellow;"> -->
-<!-- 	toolbar 1 -->
-<!-- </div> -->
-<object id="te3dwin" classid="CLSID:3a4f9192-65a8-11d5-85c1-0001023952c1" width="99%" height="99%" style="border:0px;background:red;padding:0px;margin:0px;">
-</object>
-</div>
-	
+	<div id="splitter1" class="splitter">
+    </div>
+	<div id="dvCenter" class="center">
+		<!-- <div style="background:yellow;"> -->
+		<!-- 	toolbar 1 -->
+		<!-- </div> -->
+		<object id="te3dwin" classid="CLSID:3a4f9192-65a8-11d5-85c1-0001023952c1" width="100%" height="100%" style="box-sizing:border-box;border:gray solid 1px;padding:0px;margin:0px;">
+		</object>
+	</div>
 </div>
 
 <div id="dFoot" style="padding:28px 36px;background:#b0bec5;color:#fff;display:block;box-sizing:border-box;">

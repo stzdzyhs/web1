@@ -63,3 +63,10 @@ function isEmpty(str) {
 	}
 	return false;
 }
+
+function antiNull(str) {
+	if(str==null) {
+		str = "";
+	}
+	return str;
+}

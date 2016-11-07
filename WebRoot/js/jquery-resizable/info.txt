@@ -1,0 +1,5 @@
+download from codepen.io
+
+jquery-resizable - Resizable Splitter Panels
+
+
