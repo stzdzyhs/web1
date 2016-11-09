@@ -8,33 +8,30 @@ html,body {
     height:100%;
     margin:0px;
     padding:0px;
+    box-sizing:border-box;
 }
 
 #dHead {
     height:110px;
-/*     line-height:100px; */
     background:#690;
     width:100%;
     position:absolute;
-/*     z-index:5; */
     top:0;
     box-sizing:border-box;
     padding:15px;
-/*     text-align:center; */
 }
 #dBody {
-/*     background:#FC0; */
+/*      background:blue; */
 	display: flex;
   	flex-direction: row;
 
     width:100%;
-	/*overflow:auto;*/ 
-    overflow:hide; 
+	overflow:hidden; 
 /*     z-index:10; */
     position:absolute;
-    clear:none;
+/*     clear:none; */
     top:110px;
-    bottom:0px;
+    bottom:5px;
 }
 .mycontent {
     padding:20px;
@@ -54,18 +51,20 @@ html,body {
 .left { 
 /* 	float:left; */
 	flex: 0 0 auto; 
- 	/*display:block;*/
-	width:300px;
+ 	display:block;
+	box-sizing:border-box;
+	width:300px;	
  	height:100%;
 	background:#eceff1;
-	overflow:auto;
-	padding:8px; 
+/*  	border:2px solid red;  */
+ 	overflow:auto;
+  	padding:8px;
 /* 	margin-right:-3px; */
 }
-.right { 
+.right {
 	float:right; 
 	width:30px; 
- 	height:100%;
+ 	height:80%;
 /* 	background:#0f0; */
 /* 	margin-left:-3px; */
 }
@@ -98,7 +97,7 @@ html,body {
 <script src="js/jquery/jquery-1.11.3.js"></script>
 
 <script type="text/javascript" src="js/jquery-resizable/jquery-resizable.js"></script>
-<link rel="stylesheet" type="text/css" href="js/jquery-resizable/css/style.css">
+<link rel="stylesheet" type="text/css" href="js/jquery-resizable/css/style.css"/>
 
 <script src="const.js"></script>
 <script src="js/jquery.binarytransport.js"></script>
@@ -108,6 +107,11 @@ html,body {
 <script src="js-xlsx/shim.js"></script>
 <script src="js-xlsx/jszip.js"></script>
 <script src="js-xlsx/xlsx.js"></script>
+
+<link rel="stylesheet" type="text/css" href="js/jquery-menu-aim/example/css/bootstrap.css"/>
+<link rel="stylesheet" type="text/css" href="js/jquery-menu-aim/example/css/jquery-menu-aim.css"/>
+<script src='js/jquery-menu-aim/example/js/bootstrap.min.js'></script>
+<script src="js/jquery-menu-aim/jquery.menu-aim.js"></script>
 
 <script>
 
@@ -261,6 +265,109 @@ function readXslx() {
 	});	
 }
 
+function getAge(people) {
+	if(people==null) {
+		return -1;
+	}
+	var re = new RegExp("([0-9]+)/[0-9]+/[0-9]+");
+	var ret = re.exec(people.birthday);
+	var by = 0;
+	if(ret!=null && ret.length==2) {
+		by = parseInt(ret[1],10);
+	}
+	else if(!isEmpty(people.cid)) {
+		by = parseInt(people.cid.substring(6,10),10); // get year
+	}
+	
+	if(by==0) {
+		return 0;
+	}
+	
+	var now = new Date();
+	ret = now.getFullYear()-by;
+	return ret;
+}
+
+function searchArmy() {
+	// show left search result
+	var w = parseInt($("#dvLeft").width(),10);
+	if(w<100) {
+		$("#dvLeft").animate({width:"300px"});
+	}
+	
+	searchResult = [];
+	$("#eResult").empty();
+	
+	var i;
+	for(i=0;i<houseDb.length;i++) {
+		var h = houseDb[i];
+		if(getAge(h)>=18 && getAge(h)<=25 && h.sex=="男") {
+			searchResult.push(h);
+		}
+	}
+	
+	if(searchResult.length<1) {
+		alert("没有查到数据");
+		return;
+	}
+	renderResultData(searchResult);
+}
+
+function searchChildbearingWomen() {
+	// show left search result
+	var w = parseInt($("#dvLeft").width(),10);
+	if(w<100) {
+		$("#dvLeft").animate({width:"300px"});
+	}
+	
+	searchResult = [];
+	$("#eResult").empty();
+	
+	var i;
+	for(i=0;i<houseDb.length;i++) {
+		var h = houseDb[i];
+		if(getAge(h)>=22 && getAge(h)<=30 && h.sex=="女") {
+			searchResult.push(h);
+		}
+	}
+	
+	if(searchResult.length<1) {
+		alert("没有查到数据");
+		return;
+	}
+	renderResultData(searchResult);
+}
+
+function searchRetired() {
+	// show left search result
+	var w = parseInt($("#dvLeft").width(),10);
+	if(w<100) {
+		$("#dvLeft").animate({width:"300px"});
+	}
+	
+	searchResult = [];
+	$("#eResult").empty();
+	
+	var i;
+	for(i=0;i<houseDb.length;i++) {
+		var h = houseDb[i];
+		if(getAge(h)>=60) {
+			searchResult.push(h);
+		}
+	}
+	
+	if(searchResult.length<1) {
+		alert("没有查到数据");
+		return;
+	}
+	renderResultData(searchResult);
+}
+
+function searchSpecialGroup() {
+	alert("没有查到数据");
+}
+
+
 function btnSearchOnClick() {
 	var search = $("#eSearch").val();
 	if(isEmpty(search)) {
@@ -389,7 +496,7 @@ function gotoObject(idx) {
 
 function renderResultData(searchResult) {
 	var tmp =
-"<div style='border-bottom:1px solid #888;overflow:hidden;padding:8px;' onclick='gotoObject({idx});'>" +
+"<div style='border-bottom:1px solid #888;padding:8px;position:relative;' onclick='gotoObject({idx});'>" +
 	"<div style='font-size:16px;'>{address}</div>" +
     "<div style='font-size:12px;'>{holder}</div>" +  
 "</div>";		
@@ -397,7 +504,12 @@ function renderResultData(searchResult) {
   	var data;
 	for(i=0;i<searchResult.length;i++) {
 		data = searchResult[i];
-  		html = String.format2(tmp, {idx:i, address:data.address, holder:data.name + " " + antiNull(data.tel) + " " + antiNull(data.skylineId) });
+		var age = getAge(data);
+		if(age==0) age = "";
+		
+  		html = String.format2(tmp, {idx:i, address:data.address, holder:data.name + " " + 
+  			antiNull(data.sex) + " " + antiNull(data.tel) + " " + age + " " +  
+  			antiNull(data.skylineId) });
   		//alert("html: " + html);
 		$("#eResult").append(html);
 	}
@@ -544,7 +656,8 @@ $(document).ready(function() {
 		}
 	});
 	
-	onload();	
+	onload();
+	
 });
 </script>
 
@@ -564,17 +677,56 @@ $(document).ready(function() {
 	  	</span>
   	</div>
 
-	<div style="float:right;padding-top:15px;" >
-		<input id="eSearch" size="30" style="line-height:26px;font-size:22px;vertical-align:middle;"/>
-		<img id="btnSearch" width="32px" height="32px" src="images/search.png"  style="vertical-align:middle;">
-	</div>
 </div>
 
 <div id="dBody">
 	<div id="dvLeft" class="left">
-		<div id="eResult" style="padding:5px;">
-			<h2>搜索结果</h2>
+
+		<!-- the menu	 -->
+		<div class="navbar navbar-inverse">
+      		<div class="navbar-inner">
+        		<div class="container">
+          
+          			<div class="nav-collapse collapse">
+            			<ul class="nav">
+              				<li class="active">
+                				<a class="dropdown-toggle" data-toggle="dropdown" href="#">统计</a>
+<!--                 					
+					                  jQuery-menu-aim: this <ul> defines the dropdown main menu and its contents.
+					                  This is just one of many possible examples for defining the menu's HTML.
+					                  jQuery-menu-aim is agnostic to your HTML structure, it only fires events to
+					                  be used as you please.
+					                -->
+				                <ul class="dropdown-menu">
+				                    <li data-submenu-id="submenu-patas">
+				                        <a onclick='searchArmy();'>征兵人员</a>
+				                    </li>
+				                    <li data-submenu-id="submenu-patas">
+				                        <a onclick="searchChildbearingWomen();">育龄妇女</a>
+				                    </li>
+				                    <li data-submenu-id="submenu-patas">
+				                        <a onclick="searchRetired();">退休人员</a>
+				                    </li>
+				                    <li data-submenu-id="submenu-patas">
+				                        <a onclick="searchSpecialGroup();">特殊人群</a>
+				                    </li>
+				                </ul>
+              				</li>
+            			</ul>
+          			</div>
+        		</div>
+      		</div>
 		</div>
+
+		<div style="padding-top:0px;" >
+			<input id="eSearch" size="50" style="width:210px;line-height:26px;font-size:22px;vertical-align:middle;"/>
+			<img id="btnSearch" width="32px" height="32px" src="images/search.png"  style="vertical-align:middle;">
+		</div>
+				
+		<div id="eResult" style="padding:5px;overflow:auto;display:block;position:relative;">
+			<span style="font-size:12px;">搜索结果</span>
+		</div>
+
 		<!-- 
 		<div style='border-bottom:1px solid #888;overflow:hidden;padding:8px;' onclick='gotoObject({idx});'>
 			<div style="font-size:16px;">address111...1111111111111111</div>
@@ -592,7 +744,7 @@ $(document).ready(function() {
 		<!-- <div style="background:yellow;"> -->
 		<!-- 	toolbar 1 -->
 		<!-- </div> -->
-		<object id="te3dwin" classid="CLSID:3a4f9192-65a8-11d5-85c1-0001023952c1" width="100%" height="100%" style="box-sizing:border-box;border:gray solid 1px;padding:0px;margin:0px;">
+		<object id="te3dwin" classid="CLSID:3a4f9192-65a8-11d5-85c1-0001023952c1" width="100%" height="100%" style="box-sizing:border-box;border:gray solid 3px;padding:0px;margin:0px;">
 		</object>
 	</div>
 </div>
