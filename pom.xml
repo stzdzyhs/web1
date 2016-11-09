@@ -145,7 +145,8 @@
     	<artifactId>dom4j</artifactId>
     	<version>1.6.1</version>
     </dependency>
-    
+
+<!--     
     <dependency>
     	<groupId>org.apache.poi</groupId>
     	<artifactId>poi</artifactId>
@@ -162,7 +163,8 @@
 	    <artifactId>httpclient</artifactId>
 	    <version>4.2.4</version>
 	</dependency>
-
+ -->
+ 
 	<dependency>
 	    <groupId>com.alibaba</groupId>
 	    <artifactId>fastjson</artifactId>

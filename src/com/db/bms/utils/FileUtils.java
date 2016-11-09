@@ -32,14 +32,6 @@ import java.util.zip.ZipFile;
 
 import javax.imageio.ImageIO;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.util.IOUtils;
-
 import com.db.bms.entity.LogResult;
 
 /**
@@ -803,7 +795,7 @@ public class FileUtils {
 	 */
 	public static List<List<String>> readFileByType(String fileType, File file,
 			String headTitle) {
-
+		/*
 		List<List<String>> cells = new ArrayList<List<String>>(0);// 记录一个list
 		if (".csv".equalsIgnoreCase(fileType)
 				|| ".txt".equalsIgnoreCase(fileType)) {
@@ -980,6 +972,8 @@ public class FileUtils {
 			}
 		}
 		return cells;
+		*/
+		return null;
 	}
 	
 
@@ -1000,8 +994,8 @@ public class FileUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<List<String>> readXlsFileByType(File file,
-	        String headTitle,Integer sheetNum) {
+	public static List<List<String>> readXlsFileByType(File file, String headTitle,Integer sheetNum) {
+		/*
         List<List<String>> cells = new ArrayList<List<String>>(0);// 记录一个list
         InputStream inp = null;
         try {
@@ -1073,6 +1067,8 @@ public class FileUtils {
             }
         }
         return cells;
+        */
+		return null;
     }
 
 	/**
@@ -1157,6 +1153,8 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String get_charset(File file) {
+		return null;
+		/*
 		String charset = "GBK";
 		byte[] first3Bytes = new byte[3];
 		BufferedInputStream bis = null;
@@ -1224,6 +1222,7 @@ public class FileUtils {
 			IOUtils.closeQuietly(bis);
 		}
 		return charset;
+		*/
 	}
 
 	/**
