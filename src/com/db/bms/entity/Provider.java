@@ -56,9 +56,5 @@ public class Provider extends BaseModel {
 		this.updateTime = updateTime;
 	}
 
-	@Override
-	public void setDefaultNull() {
-
-	}
 
 }

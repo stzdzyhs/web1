@@ -68,9 +68,4 @@ public class Condition5 extends BaseModel {
 		}
 	}
 	
-	
-	@Override
-	public void setDefaultNull() {
-	}
-
 }

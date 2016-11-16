@@ -72,10 +72,4 @@ public class SystemConfig extends BaseModel implements java.io.Serializable {
 
     }
 
-    @Override
-    public void setDefaultNull() {
-        // TODO Auto-generated method stub
-
-    }
-
 }

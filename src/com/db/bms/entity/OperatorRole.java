@@ -30,9 +30,4 @@ public class OperatorRole extends BaseModel {
 
 	}
 
-	@Override
-	public void setDefaultNull() {
-
-	}
-
 }

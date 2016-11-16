@@ -19,16 +19,14 @@ public abstract class BaseModel extends Object {
 	public String sortType;
 
 	@JSONField(serialize=false)
-	private String keyWord;
+	public String keyword;
 
 	@JSONField(serialize=false)
-	private Integer isSelf = 1;
+	public String path;
 	@JSONField(serialize=false)
-	private String path;
+	public String searchPath;
 	@JSONField(serialize=false)
-	private String searchPath;
-	@JSONField(serialize=false)
-	private List<Long> allocResourceIds;
+	public List<Long> allocResourceIds;
 
 	/**
 	 * 
@@ -61,14 +59,15 @@ public abstract class BaseModel extends Object {
 		this.sortKey = sortKey;
 	}
 
-	public String getKeyWord() {
-		if (keyWord != null)
-			keyWord = keyWord.trim();
-		return keyWord;
+	public String getKeyword() {
+		if (keyword != null) {
+			keyword = keyword.trim();
+		}
+		return keyword;
 	}
 
-	public void setKeyWord(String keyWord) {
-		this.keyWord = keyWord;
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
 	}
 
 	public String getSortType() {
@@ -77,14 +76,6 @@ public abstract class BaseModel extends Object {
 
 	public void setSortType(String sortType) {
 		this.sortType = sortType;
-	}
-
-	public Integer getIsSelf() {
-		return isSelf;
-	}
-
-	public void setIsSelf(Integer isSelf) {
-		this.isSelf = isSelf;
 	}
 
 	public String getPath() {
@@ -115,6 +106,5 @@ public abstract class BaseModel extends Object {
 		String ret = JSON.toJSONString(this);
 		return ret;
 	}
-	
-	public abstract void setDefaultNull();
+
 }

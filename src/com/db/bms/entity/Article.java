@@ -55,10 +55,6 @@ public class Article extends OperatorOwnedEntity implements	Serializable {
 	}
 
 	@Override
-	public void setDefaultNull() {
-	}
-
-	@Override
 	public String toString() {
 		return JSON.toJSONString(this);
 	}

@@ -2,7 +2,7 @@ package com.db.bms.entity;
 
 import java.util.List;
 
-import com.db.bms.entity.SystemConfig;
+import com.alibaba.fastjson.JSON;
 
 public class Company extends BaseModel implements java.io.Serializable {
 
@@ -147,14 +147,8 @@ public class Company extends BaseModel implements java.io.Serializable {
 	}
 	
 
-	@Override
-	public void setDefaultNull() {
-
-	}
-
 	public String toString() {
-		return com.alibaba.fastjson.JSON.toJSONString(this);
+		return JSON.toJSONString(this);
 	}
-	
 	
 }

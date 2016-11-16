@@ -59,10 +59,4 @@ public class FileInfo extends BaseModel implements Serializable {
 		this.path = path;
 	}
 
-	@Override
-	public void setDefaultNull() {
-		// TODO Auto-generated method stub
-
-	}
-
 }

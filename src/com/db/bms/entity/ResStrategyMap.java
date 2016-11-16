@@ -60,9 +60,6 @@ public class ResStrategyMap extends BaseModel {
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
 	}
-	
-	@Override
-	public void setDefaultNull() {
-	}
+
 
 }

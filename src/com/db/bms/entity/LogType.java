@@ -30,10 +30,4 @@ public class LogType extends BaseModel {
 
     }
 
-    @Override
-    public void setDefaultNull() {
-        // TODO Auto-generated method stub
-
-    }
-
 }

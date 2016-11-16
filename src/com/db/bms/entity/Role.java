@@ -44,11 +44,6 @@ public class Role extends BaseModel {
 		this.roleDescribe = roleDescribe;
 	}
 
-	@Override
-	public void setDefaultNull() {
-		this.status = null;
-	}
-
 	public Long getRoleNo() {
 		return roleNo;
 	}

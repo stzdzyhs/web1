@@ -79,3 +79,13 @@ var ObjectType={
     OT_CONTOUR_MAP : 42,
     OT_SLOPE_MAP : 43
 };
+
+
+// search type
+var SearchType={
+	SEARCH:1,
+	ARMY:2,
+	CHILDBEARING_WOMAN:3,
+	RETIRED:4,
+	SPECIAL_GROUP:5
+};

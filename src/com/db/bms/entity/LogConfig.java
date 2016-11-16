@@ -131,9 +131,4 @@ public class LogConfig extends BaseModel {
 		}
 	}
 
-	@Override
-	public void setDefaultNull() {
-
-	}
-
 }

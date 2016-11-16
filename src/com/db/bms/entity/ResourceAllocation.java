@@ -107,10 +107,5 @@ public class ResourceAllocation extends BaseModel {
 			return TOPIC;
 		}
 	}
-	
-	@Override
-	public void setDefaultNull() {
-
-	}
 
 }

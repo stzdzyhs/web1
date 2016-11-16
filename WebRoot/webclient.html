@@ -120,8 +120,19 @@ html,body {
 var FLY_FILE= "e:\\skyline\\怡德\\怡德1101\\Default1101.fly";
 
 var sgworld = null;
-var houseDb = []; // the associated xlsx data
-var searchResult=[];
+// the address(key) order in xlsx
+var addressOrder=[];
+//houseDb is a map, the key is the address.
+var houseDb = {}; // the associated xlsx data
+var searchInfo={
+	filename:getXlsxFilename(FLY_FILE),
+	searchType:0,
+	keyword:"",
+	count:0
+};
+
+
+//var searchResult=[];
 
 var selectBox = null;
 
@@ -216,14 +227,21 @@ function buildTreeRecursive(current, indent) {
  * process xlsx workbook
  */
 function processWb(workbook) {
-	houseDb = [];
-
+	houseDb = {};
+	addressOrder=[];
 	workbook.SheetNames.forEach(function(sheetName) {
 		var data = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
 		if(data.length > 0){
 			for(var i=0;i<data.length;i++) {
 				if(data[i].address!=null && data[i].address!="" &&  data[i].address!="住址") {
-					houseDb.push(data[i]);
+					var da = houseDb[data[i].address];
+					if(da!=null) {
+						da.push(data[i]);
+					}
+					else {
+						houseDb[data[i].address] = [ data[i] ];
+						addressOrder.push(data[i].address);
+					}
 				}
 			}
 		}
@@ -244,7 +262,8 @@ function readXslx() {
 			console.log("data len: " + data.length);
 			var arr = new Array();
 			var zc = 0;
-			for(var i = 0; i != data.length; ++i) {
+			var i;
+			for(i = 0; i != data.length; ++i) {
 				if(data[i]==0) {
 					zc++;
 				}
@@ -254,10 +273,15 @@ function readXslx() {
 			processWb(wb);
 			//console.log("zc: " + zc);
 			
-			//alert("houseDb : " + houseDb.length);
-			for(i=0;i<houseDb.length;i++) {
-				//console.log(i + " " + JSON.stringify(houseDb[i]));
+			var cnt = 0;
+			i=0;
+			for( i=0; i<addressOrder.length;i++) {
+				var addr = addressOrder[i];
+				var members = houseDb[addr];
+				cnt += members.length;
+				//console.log(i + " " + addr + " " + JSON.stringify(members));
 			}
+			console.log("houseDb addr len:" + addressOrder.length + " people cnt:" + cnt)
 		},
 		failure: function() {
 			alert("读取xlsx文件失败:");			
@@ -265,22 +289,27 @@ function readXslx() {
 	});	
 }
 
+/**
+ * return null if can not get age.
+ */
 function getAge(people) {
 	if(people==null) {
-		return -1;
-	}
-	var re = new RegExp("([0-9]+)/[0-9]+/[0-9]+");
-	var ret = re.exec(people.birthday);
-	var by = 0;
-	if(ret!=null && ret.length==2) {
-		by = parseInt(ret[1],10);
-	}
-	else if(!isEmpty(people.cid)) {
-		by = parseInt(people.cid.substring(6,10),10); // get year
+		return null;
 	}
 	
-	if(by==0) {
-		return 0;
+	var by = null;
+	if(!isEmpty(people.cid)) {
+		by = parseInt(people.cid.substring(6,10),10); // get year
+	}
+	else if(!isEmpty(people.birthday)) {
+		// in chrome, birthday is string, "Wednesday, January 01, 1997", OS dependent ?
+		var re = new RegExp("([0-9]+)/[0-9]+/[0-9]+");
+		var ret = re.exec(people.birthday);
+		by = parseInt(ret[1],10);
+	}
+	
+	if(by==null) {
+		return null;
 	}
 	
 	var now = new Date();
@@ -298,22 +327,36 @@ function searchArmy() {
 	searchResult = [];
 	$("#eResult").empty();
 	
-	var i;
-	for(i=0;i<houseDb.length;i++) {
-		var h = houseDb[i];
-		if(getAge(h)>=18 && getAge(h)<=25 && h.sex=="男") {
-			searchResult.push(h);
-		}
-	}
 	
-	if(searchResult.length<1) {
+	var search1 = function(member) {
+		/*
+		if(member.name=="邬光杰") {
+			console.log("hhhhhh");
+			debugger;
+		}
+		*/
+		
+		var age = getAge(member);
+		if(age!=null && age>=18 && age<=25 && member.sex=="男") {
+			return true;
+		}
+		return false;
+	};
+	
+	var ret = search(false, search1);
+	console.log("searchArmy ret: " + ret);
+	
+	searchInfo.searchType = SearchType.ARMY;
+	searchInfo.count = ret;
+	
+	if(ret<1) {
 		alert("没有查到数据");
 		return;
 	}
-	renderResultData(searchResult);
+	renderResultData();
 }
 
-function searchChildbearingWomen() {
+function searchChildbearingWoman() {
 	// show left search result
 	var w = parseInt($("#dvLeft").width(),10);
 	if(w<100) {
@@ -323,19 +366,25 @@ function searchChildbearingWomen() {
 	searchResult = [];
 	$("#eResult").empty();
 	
-	var i;
-	for(i=0;i<houseDb.length;i++) {
-		var h = houseDb[i];
-		if(getAge(h)>=22 && getAge(h)<=30 && h.sex=="女") {
-			searchResult.push(h);
+	var search1 = function(member) {
+		var age = getAge(member);
+		if(age!=null && age>=22 && age<=30 && member.sex=="女") {
+			return true;
 		}
-	}
+		return false;
+	};
 	
-	if(searchResult.length<1) {
+	var ret = search(false, search1);
+	console.log("searchChildbearingWoman ret: " + ret);
+
+	searchInfo.searchType = SearchType.CHILDBEARING_WOMAN;
+	searchInfo.count = ret;
+
+	if(ret<1) {
 		alert("没有查到数据");
 		return;
 	}
-	renderResultData(searchResult);
+	renderResultData();
 }
 
 function searchRetired() {
@@ -346,31 +395,96 @@ function searchRetired() {
 	}
 	
 	searchResult = [];
-	$("#eResult").empty();
+	$("#eResult").empty();	
 	
-	var i;
-	for(i=0;i<houseDb.length;i++) {
-		var h = houseDb[i];
-		if(getAge(h)>=60) {
-			searchResult.push(h);
+	var search1 = function(member) {
+		var age = getAge(member);
+		if(age!=null && age>=60) {
+			return true;
 		}
-	}
+		return false;
+	};
 	
-	if(searchResult.length<1) {
+	var ret = search(false, search1);
+	console.log("searchRetired ret: " + ret);
+	
+	searchInfo.searchType = SearchType.RETIRED;
+	searchInfo.count = ret;
+	if(ret<1) {
 		alert("没有查到数据");
 		return;
 	}
-	renderResultData(searchResult);
+	renderResultData();
 }
 
 function searchSpecialGroup() {
-	alert("没有查到数据");
+	// show left search result
+	var w = parseInt($("#dvLeft").width(),10);
+	if(w<100) {
+		$("#dvLeft").animate({width:"300px"});
+	}
+	
+	searchResult = [];
+	$("#eResult").empty();	
+	
+	var search1 = function(member) {
+		return false;
+	};
+	
+	var ret = search(false, search1);
+
+	searchInfo.searchType = SearchType.SPECIAL_GROUP;
+	searchInfo.count = ret;
+
+	if(ret<1) {
+		alert("没有查到数据");
+		return;
+	}
+	renderResultData();
+}
+
+/**
+ * wholeFamily: bool, if wholeFamily, when a member is matched, all members in the family will be matched.
+ * searchFunc: a function to test match or not.
+ * return how many member matched
+ */
+function search(wholeFamily, searchFunc) {
+	var ret = 0;
+	
+	$.each(houseDb, function(key, members) {
+		var j;
+		// init matched flag to false
+		for(j=0;j<members.length;j++) {
+			members[j].matched = false;
+		}
+		
+		for(j=0;j<members.length;j++) {
+			var m = members[j];			
+			if (searchFunc(m)) {
+				m.matched= true;
+				
+				if(wholeFamily) {
+					for(j=0;j<members.length;j++) {
+						members[j].matched = true;
+					}
+					ret = ret + members.length;
+					break;
+				}
+				else {
+					ret ++;
+				}
+			}
+		}
+	});
+	
+	return ret;
 }
 
 
 function btnSearchOnClick() {
-	var search = $("#eSearch").val();
-	if(isEmpty(search)) {
+	var schTxt0 = $("#eSearch").val();
+	var schTxt = schTxt0; 
+	if(isEmpty(schTxt)) {
 		alert("请输入查询内容");
 		return;
 	}
@@ -382,43 +496,47 @@ function btnSearchOnClick() {
 	}
 	
 	// replace whiteSpace --> *
-	search = search.replace(new RegExp(" ","g"), "*");
+	schTxt = schTxt.replace(new RegExp(" ","g"), "*");
 	// replace *... --> .*
-	search = search.replace(new RegExp("\\*+","g"), ".*");
-	var re = new RegExp(search, "g");
+	schTxt = schTxt.replace(new RegExp("\\*+","g"), ".*");
+	var re = new RegExp(schTxt, "g");
 	
-	searchResult = [];
-	$("#eResult").empty();
+	$("#eResult").empty();	
 	
-	var i;
-	for(i=0;i<houseDb.length;i++) {
-		var h = houseDb[i];	
-		if(re.test(h.address)) {
-			searchResult.push(h);
+	var search1 = function(member) {
+		if(re.test(member.address)) {
+			return true;
 		}
-		else if(re.test(h.houseAddress)) {
-			searchResult.push(h);
+		else if(re.test(member.houseAddress)) {
+			return true;
 		}
-		else if(re.test(h.name)) {
-			searchResult.push(h);
+		else if(re.test(member.name)) {
+			return true;
 		}
-		else if(search.length>7 && re.test(h.cid)) {// not test cid if too short
-			searchResult.push(h);
+		else if(search.length>7 && !isEmpty(member.cid) && re.test(member.cid)) {// not test cid if too short
+			return true;
 		}
-		else if(re.test(h.aid)) {
-			searchResult.push(h);
+		else if(!isEmpty(member.aid) && re.test(member.aid)) {
+			return true;
 		}
-		else if(re.test(h.tel)) {
-			searchResult.push(h);
+		else if(!isEmpty(member.tel) && re.test(member.tel)) {
+			return true;
 		}
-	}
+		return false;
+	};
 	
-	if(searchResult.length<1) {
+	var ret = search(true, search1);
+	
+	searchInfo.searchType = SearchType.SEARCH;
+	searchInfo.keyword = schTxt0; 
+	searchInfo.count = ret;
+
+	if(ret<1) {
 		alert("没有查到数据");
 		return;
 	}
 	
-	renderResultData(searchResult);
+	renderResultData();
 }
 
 
@@ -432,19 +550,22 @@ function dumpobj(obj) {
 
 /**
  * 点击搜索结果处理函数
- * idx - 为searchResult里面的index
  */
-function gotoObject(idx) {
-	if (searchResult[idx]==null) return;
-	var data = searchResult[idx];
-	if(isEmpty(data.skylineId)) {
-		alert("暂无3d数据");
+function gotoObject(addr) {
+	var members = houseDb[addr];	
+	if (members==null) {
+		throw new Error("why member is null:" + addr);
+	}
+	var data = members[0];
+	
+	if(data==null || isEmpty(data.skylineId)) {
+		//alert("暂无3d数据");
 		return;
 	}
 	
 	var objId = sgworld.ProjectTree.FindItem(data.skylineId); // skylineId: 1号楼\201
 	if(isEmpty(objId)) {
-		alert("暂无3d数据:" + data.skylineId);
+		//alert("暂无3d数据:" + data.skylineId);
 		return;
 	}
 	
@@ -464,9 +585,31 @@ function gotoObject(idx) {
 	
 	//obj.Message.GetMessageObject().InnerText = "the text set in js....";
 
-	var msg = sgworld.Creator.CreatePopupMessage("msg", "", 10, 10, 450, 200, -1);
-	msg.InnerText = data.address + "\r\n" + antiNull(data.houseAddress) + "\r\n" + data.name 
-	    + " "  + antiNull(data.tel);
+	var msg = sgworld.Creator.CreatePopupMessage("信息", "", 10, 10, 450, 200, -1);
+	var i;
+	var msgTxt;
+	var t1 = "地址:{address}\r\n房屋地址:{houseAddress}\r\n";
+	msgTxt = String.format2(t1,{
+		address:members[0].address, 
+		houseAddress:members[0].houseAddress
+	});
+	
+	var t2 = "姓名:{name} 性别:{sex} 年龄:{age}\r\n身份证号码:{cid}\r\n迁入时间:{inDate}\r\n电话:{tel}"
+	for(i=0;i<members.length;i++) {
+		var m = members[i];
+		if(m.matched) {
+			msgTxt += "\r\n";
+			msgTxt += String.format2(t2, {
+				name:m.name, 
+				sex:antiNull(m.sex), 
+				age:antiNull(getAge(m)),
+				cid:antiNull(m.cid),
+				inDate:antiNull(m.inDate),
+				tel:antiNull(m.tel)
+			});
+		}
+	}
+	msg.InnerText = msgTxt; 
 	obj.Message.MessageID = msg.ID;
 	
     //设置高亮
@@ -479,7 +622,9 @@ function gotoObject(idx) {
         obj.Terrain.Tint.SetAlpha(0.5);
 		selectBox = obj;
     }
+	sgworld.Navigate.FlyTo(obj,0);
 	
+	/*
     var pos = sgworld.Creator.CreatePosition(obj.Position.X+0.00045, // X
     		obj.Position.Y, // Y
     		obj.Position.Altitude,     // Altitude
@@ -487,32 +632,65 @@ function gotoObject(idx) {
                obj.Position.Yaw,      // Yaw
                0);     // Pitch
 	
-	sgworld.Navigate.FlyTo(obj,0);
-	
     setTimeout(function() {
     	sgworld.Navigate.SetPosition(pos);               
     }, 2000);
+	*/
 }
 
-function renderResultData(searchResult) {
-	var tmp =
-"<div style='border-bottom:1px solid #888;padding:8px;position:relative;' onclick='gotoObject({idx});'>" +
-	"<div style='font-size:16px;'>{address}</div>" +
-    "<div style='font-size:12px;'>{holder}</div>" +  
-"</div>";		
+function renderResultData() {
+	var t1 = "<div style='border-bottom:1px solid #888;padding:8px;position:relative;' onclick='gotoObject(\"{address}\");'>" +
+			      "<div style='font-size:16px;'>{address2}</div>" ;
+	var t2 =      "<div style='font-size:12px;'>{holder}</div>";
+	var t3 = "</div>";
+	
+	var i,j;
+	var cnt = 0;
+	for(i=0;i<addressOrder.length;i++) {
+		var addr = addressOrder[i];
+		var members = houseDb[addr];
+		var found = false;
+		var skylineId = "";
+		for(j=0;j<members.length;j++) {
+			if(skylineId=="" && !isEmpty(members[j].skylineId)) {
+				skylineId = members[j].skylineId;	
+			}
+			if(members[j].matched) {
+				found = true;
+				break;
+			}
+		}
 		
-  	var data;
-	for(i=0;i<searchResult.length;i++) {
-		data = searchResult[i];
-		var age = getAge(data);
-		if(age==0) age = "";
-		
-  		html = String.format2(tmp, {idx:i, address:data.address, holder:data.name + " " + 
-  			antiNull(data.sex) + " " + antiNull(data.tel) + " " + age + " " +  
-  			antiNull(data.skylineId) });
-  		//alert("html: " + html);
-		$("#eResult").append(html);
+		if(found) {
+			var html = "";
+			
+			var age;
+			
+			if(isEmpty(skylineId)) {
+				html =  String.format2(t1, {address:addr, address2:addr + " 暂无位置数据"});
+			}
+			else {
+				html =  String.format2(t1, {address:addr, address2:addr});
+			}
+				
+			for(j=0;j<members.length;j++) {
+				var m = members[j];
+				if(m.matched) {
+					cnt ++;
+					age = getAge(m);
+					if(age!=null) {
+						html = html + String.format2(t2, {holder:m.name + " " + antiNull(m.sex) + " " + age + "岁 " + antiNull(m.tel) });
+					}
+					else {
+						html = html + String.format2(t2, {holder:m.name + " " + antiNull(m.sex) + " " + antiNull(m.tel) });
+					}
+				}
+			}
+			html = html + t3;
+			$("#eResult").append(html);
+		}
 	}
+	console.log("render result cnt: " + cnt);
 }
 
 /*
@@ -546,7 +724,16 @@ function sgworld_OnLButtonDown(flags, x, y)
     return false; // 这里不能return true；否则导致不能浏览三维。
 }
 
-
+function exportSearch() {
+	if(searchInfo.count<1) {
+		alert("没有数据可以导出");
+		return;
+	}
+	
+	$("#data").val(JSON.stringify(searchInfo));
+	
+	$("#form1").submit();
+}
 
 function onload() {
 	readXslx();
@@ -670,11 +857,11 @@ $(document).ready(function() {
 <div id="dHead" style="">
 	<div style="float:left;vertical-align:middle;">
 		<a style="display:inline-block;" href="#">
-	    	<img alt="company logo" style="width:90px;height:90px;vertical-align:middle;" src="images/house2.png"/>
+	    	<img alt="company logo" style="width:90px;height:90px;" src="images/house2.png"/>
 	  	</a>
-	  	<span style="color:black;font-size:40px;font-weight:bold;">
-	  		广州市白云区怡德小区三维数字社区
-	  	</span>
+	  	<div style="display:inline-block;color:black;vertical-align:middle;font-size:42px;font-weight:bold;margin:15px;">
+		  		广州市白云区怡德小区三维数字社区	  		
+	  	</div>
   	</div>
 
 </div>
@@ -689,7 +876,7 @@ $(document).ready(function() {
           
           			<div class="nav-collapse collapse">
             			<ul class="nav">
-              				<li class="active">
+              				<li class="">
                 				<a class="dropdown-toggle" data-toggle="dropdown" href="#">统计</a>
 <!--                 					
 					                  jQuery-menu-aim: this <ul> defines the dropdown main menu and its contents.
@@ -702,7 +889,7 @@ $(document).ready(function() {
 				                        <a onclick='searchArmy();'>征兵人员</a>
 				                    </li>
 				                    <li data-submenu-id="submenu-patas">
-				                        <a onclick="searchChildbearingWomen();">育龄妇女</a>
+				                        <a onclick="searchChildbearingWoman();">育龄妇女</a>
 				                    </li>
 				                    <li data-submenu-id="submenu-patas">
 				                        <a onclick="searchRetired();">退休人员</a>
@@ -712,6 +899,9 @@ $(document).ready(function() {
 				                    </li>
 				                </ul>
               				</li>
+              				<li class="">
+              					<a class="dropdown-toggle" data-toggle="dropdown" onclick="exportSearch();">导出</a>
+							</li>              					
             			</ul>
           			</div>
         		</div>
@@ -736,6 +926,7 @@ $(document).ready(function() {
 			<div style="font-size:16px;">address2222222222222222222222</div>
 			<div style="font-size:12px;">名字 13925031491...</div> 
 	  	</div>
+		
  		-->	  	
 	</div>
 	<div id="splitter1" class="splitter">
@@ -769,6 +960,9 @@ $(document).ready(function() {
 	</ul>
 </div>
  -->
-
+<form id="form1" name="form1" method="post" action="exportSearch.action">
+	<input type="hidden" id="data" name="data"/>
+</form>
+ 
 </body>
 </html>

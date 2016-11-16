@@ -40,8 +40,4 @@ public class OperatorResource extends BaseModel {
 		this.type = type;
 	}
 
-	@Override
-	public void setDefaultNull() {
-	}
-
 }

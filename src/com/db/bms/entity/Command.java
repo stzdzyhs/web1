@@ -2,6 +2,8 @@ package com.db.bms.entity;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
+
 
 public class Command extends BaseModel implements java.io.Serializable  {
 
@@ -162,12 +164,7 @@ public class Command extends BaseModel implements java.io.Serializable  {
 		}
 	}
 
-    @Override
-    public void setDefaultNull() {
-        this.status = null;
-    }
-
     public String toString() {
-        return com.alibaba.fastjson.JSON.toJSONString(this);
+        return JSON.toJSONString(this);
     }
 }
