@@ -24,7 +24,7 @@ div, h1,h2,h3,h4,h5,p {
 	box-shadow: 8px 8px 8px #757575; 
 	-moz-box-shadow: 8px 8px 8px #757575; 
 	-webkit-box-shadow: 8px 8px 8px #757575; 
-	-khtml-box-shadow: 8px 8px 8px #757575; 
+	-khtml-box-shadow: 8px 8px 8px #757575;
 }
  
 .gradient1 {
@@ -43,7 +43,11 @@ div, h1,h2,h3,h4,h5,p {
 	border-radius: 6px;
 	position:absolute;
 }
-
+.blue-box {
+	border:6px solid blue;
+	border-radius: 6px;
+	position:absolute;
+}
 
 </style>
 
@@ -68,6 +72,62 @@ div, h1,h2,h3,h4,h5,p {
 
 <script>
 
+function changeBoxPos(idx, img) {
+	var e = $(img);
+	var w = e.width();
+	var h = e.height();
+	var n = e.next();
+	if(n==null) {
+		console.log("next empty ?");
+		return;
+	}
+	var pos = n.attr("pos");
+	if(isEmpty(pos)) {
+		console.log("pos attr empty ?");
+		return;
+	}
+	var poss = pos.split(",");
+	if(poss.length!=4) {
+		console.log("pos attr error ?");
+		return;
+	}
+	
+	var left = Math.round(w * parseFloat(poss[0]));
+	var top = Math.round(h * parseFloat(poss[1]));
+	var w2 = Math.round(w * parseFloat(poss[2]));
+	var h2 = Math.round(h * parseFloat(poss[3]));
+	
+	console.log("poss: " + JSON.stringify(poss));
+	
+	n.css({left:left,top:top});
+	n.width(w2);
+	n.height(h2);
+	
+	var s = String.format("left:{0}, top:{1}, w:{2} h:{3}", left, top, w2, h2 );
+	console.log(s);
+	console.log("********* w:" + w + " h:" + h);
+	
+}
+$(document).ready(function() {
+	/*
+	$("img").resize(function(e) {
+		console.log("resize:" + e);
+	});
+	$("#id1").resize(function(e) {
+		console.log("id 1 resize:" + e);
+	});
+	*/
+	$(window).resize(function(e) {
+		$("img").each(changeBoxPos);
+	});
+	console.log("bind ok");
+	
+	$(window).resize();
+});
+
+function f1(e) {
+	console.log("f1 e:" + e);
+}
 </script>
 
 </head>
@@ -80,7 +140,7 @@ div, h1,h2,h3,h4,h5,p {
 		</h1>
 	</div>
 	
-	<div style="padding:30px;width:60%;text-align: justify;word-wrap: break-word;font-size:16px;">
+	<div style="padding:30px;width:60%;text-align:justify;word-wrap:break-word;font-size:16px;">
   		<h3>一、概述</h3>
   		<p style="">
   		基于三维建模和大数据统计技术的突破性进展，深圳启云高创数据科技有限公司自主研发了一套以高分辨率三维数字社区模型为基础的管理平台。
@@ -100,9 +160,9 @@ div, h1,h2,h3,h4,h5,p {
 			<p style="text-indent:0em;">
 				1.1 用户可直接在数字社区点击对应位置，系统自动显示该户主相关信息（如图1），红色高亮位置即为选中位置
 			</p>
-			<div style="position:relative;">
-				<img class="img-shadow1" src="images/help1.png" alt="图1"  title="图1"/>
-				<div class="red-box" style="left:420px;top:500px;width:100px;height:100px;"></div>
+			<div id="id1" style="position:relative;">
+				<img id="img1" class="img-shadow1" src="images/help1.png" alt="图1"  title="图1" width="1100px" height="500px"/>
+				<div class="red-box" style="" pos="0.37,0.75,0.15,0.15"></div>
 			</div>
 			
 			<div style="height:26px;"></div>
@@ -110,27 +170,31 @@ div, h1,h2,h3,h4,h5,p {
 				1.2 用户可通过输入户主姓名或地址查找，系统自动跳转到对应位置，并且自动显示户主相关信息（如图2）
 			</p>
 			<div style="position:relative;">
-				<img src="images/help2.png" class="img-shadow1" alt="图2"  title="图2"/>
-				<div class="red-box" style="left:0px;top:100px;width:200px;height:100px;"></div>
+				<img src="images/help2.png" class="img-shadow1" alt="图2"  title="图2" width="1100px" height="500px"/>
+<!-- 				<div class="red-box" style="left:0px;top:100px;width:200px;height:100px;"></div> -->
+				<div class="red-box" style="left:0px;top:100px;width:200px;height:100px;" pos="-0.01,0.1,0.2,0.15"></div>
 			</div>				
 		</div>
 
       	<div class="padding-top1">
       		<h5>2.统计功能：</h5>
       		<div style="position:relative;">
-				<img src="images/help3.png" class="img-shadow1" width="1100px" alt="图3" title="图3"/><br/>
-				<div class="red-box" style="left:3px;top:150px;width:150px;height:230px;"></div>
-			</div>			
+				<img src="images/help3.png" class="img-shadow1" alt="图3" title="图3" width="1100px" height="300px"/>
+<!-- 				<div class="red-box" style="left:3px;top:150px;width:150px;height:230px;"></div> -->
+				<div class="red-box" style="left:0px;top:100px;width:200px;height:100px;" pos="0.02,0.3,0.18,0.65"></div>				
+			</div>
 			<div style="text-align:center;padding:5px;"><span> 图3</span></div>
 			<div style="position:relative;">
-				<img src="images/help4.png" class="img-shadow1" style="width:1100px;height:600px;" alt="图4"  title="图4"/><br/>
-				<div class="red-box" style="left:90px;top:100px;width:100px;height:80px;"></div>
+				<img src="images/help4.png" class="img-shadow1" width="1100px" height="600px" alt="图4"  title="图4"/>
+<!-- 				<div class="red-box" style="left:90px;top:100px;width:100px;height:80px;"></div> -->
+				<div class="red-box"  pos="0.07,0.16,0.1,0.15"></div>
 			</div>
 			<div style="text-align:center;padding:5px;"><span> 图4</span></div>
 			
 			<div style="position:relative;">
-				<img src="images/help5.png" style="width:1100px;" class="img-shadow1" alt="图5"  title="图5"/><br/>
-				<div class="red-box" style="left:790px;top:20px;width:100px;height:80px;"></div>
+				<img src="images/help5.png" style="width:1100px;" class="img-shadow1" alt="图5"  title="图5" width="1100px" height="150px"/>
+<!-- 				<div class="red-box" style="left:790px;top:20px;width:100px;height:80px;"></div> -->
+				<div class="red-box"  pos="0.75,0.47,0.1,0.32"></div>
 			</div>
 			<div style="text-align:center;padding:5px;"><span> 图5</span></div>
 			<p>
@@ -144,8 +208,9 @@ div, h1,h2,h3,h4,h5,p {
       			平台相关信息及操作指南（如图6）
       		</p>
       		<div style="position:relative;">
-      			<img src="images/help6.png" class="img-shadow1" style="width:1100px;" alt="图6"  title="图6"/><br/>
-				<div class="red-box" style="left:940px;top:0px;width:100px;height:80px;"></div>
+      			<img src="images/help6.png" class="img-shadow1" alt="图6"  title="图6" width="1100px" height="400px"/>
+      			<div class="red-box"  pos="0.92,-0.01,0.08,0.12"></div>
+<!-- 				<div class="red-box" style="left:940px;top:0px;width:100px;height:80px;"></div> -->
    			</div>
 			<div style="text-align:center;padding:5px;"><span> 图6</span></div>
 		</div>
